@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>내기 한판</title>
+
+  <!-- PWA & 모바일 전체화면 설정 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="내기 한판">
+  <meta name="theme-color" content="#121214">
+  <link rel="manifest" href='data:application/manifest+json,{"name":"내기 한판","short_name":"내기 한판","start_url":".","display":"standalone","background_color":"#121214","theme_color":"#121214"}'>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      background-color: #121214;
+      color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px);
+      overscroll-behavior: none;
+    }
+    header {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    
+    /* 탭 메뉴 */
+    .tab-bar {
+      display: flex;
+      background: #202026;
+      border-radius: 14px;
+      padding: 4px;
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      color: #8a8a93;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: #32323a;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* 게임 컨테이너 */
+    .game-view {
+      display: none;
+      width: 100%;
+      max-width: 420px;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.25s ease;
+    }
+    .game-view.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 공통 버튼 */
+    .btn-action {
+      background: linear-gradient(135deg, #ff5e62, #ff9966);
+      color: #fff;
+      border: none;
+      padding: 15px 44px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(255, 94, 98, 0.4);
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    .btn-action:active { transform: scale(0.96); }
+    .btn-action:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* [탭 1] 룰렛 스타일 */
+    .roulette-box {
+      position: relative;
+      width: 290px;
+      height: 290px;
+      margin-bottom: 28px;
+    }
+    .pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 24px solid #ff4444;
+      z-index: 10;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
+    }
+    .roulette-result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      min-height: 28px;
+      color: #ffd166;
+      text-align: center;
+    }
+
+    /* [탭 2] 5.00초 스톱워치 스타일 */
+    .stopwatch-card {
+      background: #1c1c21;
+      border-radius: 20px;
+      width: 100%;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+    .target-badge {
+      background: #2a2a35;
+      color: #ff9966;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .turn-label {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .timer-display {
+      font-size: 3.5rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+      color: #00ffcc;
+      margin-bottom: 8px;
+      min-height: 70px;
+    }
+    .blind-hint {
+      font-size: 0.82rem;
+      color: #71717a;
+      min-height: 20px;
+      margin-bottom: 20px;
+    }
+    .scoreboard {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .score-item {
+      flex: 1;
+      background: #27272f;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .score-name {
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      margin-bottom: 4px;
+    }
+    .score-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .score-diff {
+      font-size: 0.78rem;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .final-banner {
+      margin-top: 18px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffd166;
+      text-align: center;
+      min-height: 28px;
+    }
+    .btn-secondary {
+      background: #2f2f38;
+      color: #d1d5db;
+      box-shadow: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔥 오늘의 밥값 내기 🔥</h1>
+  </header>
+
+  <!-- 상단 네비게이션 탭 -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('roulette')">🎯 룰렛 돌리기</button>
+    <button class="tab-btn" onclick="switchTab('stopwatch')">⏱️ 5.00초 블라인드</button>
+  </div>
+
+  <!-- [화면 1] 룰렛 탭 -->
+  <div id="view-roulette" class="game-view active">
+    <div class="roulette-box">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="600" height="600"></canvas>
+    </div>
+    <button class="btn-action" id="spinBtn" onclick="spinWheel()">돌리기!</button>
+    <div class="roulette-result" id="rouletteResult"></div>
+  </div>
+
+  <!-- [화면 2] 5.00초 블라인드 스톱워치 탭 -->
+  <div id="view-stopwatch" class="game-view">
+    <div class="stopwatch-card">
+      <div class="target-badge">목표 시간: 정확히 5.00초</div>
+      <div class="turn-label" id="turnIndicator">찬우 차례</div>
+      <div class="timer-display" id="timer">0.00</div>
+      <div class="blind-hint" id="timerHint">1.5초가 지나면 시간이 블라인드 처리됩니다!</div>
+
+      <button class="btn-action" id="timerBtn" onclick="handleTimerClick()">시작</button>
+      <button class="btn-action btn-secondary" id="resetMatchBtn" onclick="resetMatch()" style="display: none;">처음부터 다시하기</button>
+
+      <!-- 전적 기록창 -->
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-name">찬우 기록</div>
+          <div class="score-val" id="score1">-</div>
+          <div class="score-diff" id="diff1"></div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">혜진 기록</div>
+          <div class="score-val" id="score2">-</div>
+          <div class="score-diff" id="diff2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="final-banner" id="matchResult"></div>
+  </div>
+
+  <script>
+    /* ================= 탭 전환 ================= */
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
+
+      if (tab === 'roulette') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('view-roulette').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('view-stopwatch').classList.add('active');
+      }
+    }
+
+    /* ================= 1. 룰렛 로직 ================= */
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
+    const rouletteResult = document.getElementById("rouletteResult");
+
+    const sectors = ["찬우", "혜진", "찬우", "혜진"];
+    const colors = ["#e63946", "#3a86ff", "#e63946", "#3a86ff"];
+    const totalSectors = sectors.length;
+    const arc = (2 * Math.PI) / totalSectors;
+    let currentRotation = 0;
+
+    function drawWheel() {
+      const radius = canvas.width / 2;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < totalSectors; i++) {
+        const angle = i * arc - Math.PI / 2;
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.arc(radius, radius, radius, angle, angle + arc);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
+
+        ctx.save();
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 46px -apple-system, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const textAngle = angle + arc / 2;
+        ctx.translate(
+          radius + Math.cos(textAngle) * (radius * 0.65),
+          radius + Math.sin(textAngle) * (radius * 0.65)
+        );
+        ctx.rotate(textAngle + Math.PI / 2);
+        ctx.fillText(sectors[i], 0, 0);
+        ctx.restore();
+      }
+    }
+
+    function spinWheel() {
+      spinBtn.disabled = true;
+      rouletteResult.innerText = "두구두구... 과연 결과는?";
+
+      const randomExtra = Math.floor(Math.random() * 360);
+      const totalSpin = 360 * 5 + randomExtra;
+      currentRotation += totalSpin;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        const normalizedDegree = (360 - (currentRotation % 360)) % 360;
+        const sliceDegree = 360 / totalSectors;
+        const winningIndex = Math.floor(normalizedDegree / sliceDegree);
+        const loser = sectors[winningIndex];
+
+        rouletteResult.innerText = `🎉 당첨: [${loser}] 계산 당첨!`;
+        spinBtn.disabled = false;
+      }, 4000);
+    }
+    drawWheel();
+
+    /* ================= 2. 5.00초 스톱워치 로직 ================= */
+    let currentStep = 0; // 0: 찬우 시작전, 1: 찬우 측정중, 2: 혜진 시작전, 3: 혜진 측정중, 4: 게임 종료
+    let startTime = 0;
+    let timerInterval = null;
+    let scoreChanwoo = null;
+    let scoreHyejin = null;
+
+    const timerEl = document.getElementById("timer");
+    const timerBtn = document.getElementById("timerBtn");
+    const turnIndicator = document.getElementById("turnIndicator");
+    const timerHint = document.getElementById("timerHint");
+    const matchResult = document.getElementById("matchResult");
+    const resetMatchBtn = document.getElementById("resetMatchBtn");
+
+    function handleTimerClick() {
+      if (currentStep === 0) { // 찬우 시작
+        startTimer();
+        timerBtn.innerText = "스톱!";
+        timerBtn.style.background = "#ff4444";
+        currentStep = 1;
+      } else if (currentStep === 1) { // 찬우 정지
+        scoreChanwoo = stopTimer();
+        document.getElementById("score1").innerText = scoreChanwoo.toFixed(2) + "초";
+        const diff1 = (scoreChanwoo - 5.00).toFixed(2);
+        document.getElementById("diff1").innerText = `(오차 ${diff1 > 0 ? '+' : ''}${diff1}s)`;
+        document.getElementById("diff1").style.color = "#ffd166";
+
+        turnIndicator.innerText = "혜진 차례";
+        timerBtn.innerText = "혜진 시작";
+        timerBtn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
+        timerHint.innerText = "준비되셨으면 시작을 눌러주세요!";
+        currentStep = 2;
+      } else if (currentStep === 2) { // 혜진 시작
+        startTimer();
+        timerBtn.innerText = "스톱!";
+        timerBtn.style.background = "#ff4444";
+        currentStep = 3;
+      } else if (currentStep === 3) { // 혜진 정지 및 결과 판정
+        scoreHyejin = stopTimer();
+        document.getElementById("score2").innerText = scoreHyejin.toFixed(2) + "초";
+        const diff2 = (scoreHyejin - 5.00).toFixed(2);
+        document.getElementById("diff2").innerText = `(오차 ${diff2 > 0 ? '+' : ''}${diff2}s)`;
+        document.getElementById("diff2").style.color = "#ffd166";
+
+        calculateWinner();
+        timerBtn.style.display = "none";
+        resetMatchBtn.style.display = "inline-block";
+        currentStep = 4;
+      }
+    }
+
+    function startTimer() {
+      startTime = performance.now();
+      timerInterval = setInterval(() => {
+        const elapsed = (performance.now() - startTime) / 1000;
+        if (elapsed >= 1.5) {
+          timerEl.innerText = "?.??";
+          timerHint.innerText = "마음속으로 5초를 세고 누르세요!";
+        } else {
+          timerEl.innerText = elapsed.toFixed(2);
+        }
+      }, 30);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      const finalSec = (performance.now() - startTime) / 1000;
+      timerEl.innerText = finalSec.toFixed(2);
+      return finalSec;
+    }
+
+    function calculateWinner() {
+      const err1 = Math.abs(scoreChanwoo - 5.00);
+      const err2 = Math.abs(scoreHyejin - 5.00);
+
+      turnIndicator.innerText = "대결 종료!";
+      if (err1 < err2) {
+        matchResult.innerText = "👑 승자: 찬우! (혜진 계산 당첨 🔥)";
+      } else if (err2 < err1) {
+        matchResult.innerText = "👑 승자: 혜진! (찬우 계산 당첨 🔥)";
+      } else {
+        matchResult.innerText = "😮 완전 무승부! 다시 대결하세요!";
+      }
+    }
+
+    function resetMatch() {
+      currentStep = 0;
+      scoreChanwoo = null;
+      scoreHyejin = null;
+      timerEl.innerText = "0.00";
+      turnIndicator.innerText = "찬우 차례";
+      timerHint.innerText = "1.5초가 지나면 시간이 블라인드 처리됩니다!";
+      matchResult.innerText = "";
+      document.getElementById("score1").innerText = "-";
+      document.getElementById("diff1").innerText = "";
+      document.getElementById("score2").innerText = "-";
+      document.getElementById("diff2").innerText = "";
+      timerBtn.style.display = "inline-block";
+      timerBtn.innerText = "시작";
+      timerBtn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
+      resetMatchBtn.style.display = "none";
+    }
+  </script>
+</body>
+</html>
