@@ -134,7 +134,7 @@
     }
     .roulette-result {
       margin-top: 20px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       min-height: 28px;
       color: #ffd166;
@@ -227,12 +227,93 @@
       font-size: 1rem;
       margin-top: 14px;
     }
+
+    /* 팝업 모달 스타일 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-box {
+      background: #1f1f26;
+      border-radius: 24px;
+      padding: 30px 24px 24px;
+      width: 85%;
+      max-width: 320px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      border: 1px solid #33333f;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #8e8e93;
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .modal-emoji {
+      font-size: 3.2rem;
+      margin-bottom: 10px;
+      animation: wiggle 0.6s ease infinite alternate;
+    }
+    @keyframes wiggle {
+      from { transform: rotate(-8deg); }
+      to { transform: rotate(8deg); }
+    }
+    .modal-title {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ffd166;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .modal-desc {
+      font-size: 0.95rem;
+      color: #e4e4e7;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .modal-btn {
+      background: linear-gradient(135deg, #ff5e62, #ff9966);
+      color: #fff;
+      border: none;
+      padding: 12px 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 14px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 14px rgba(255, 94, 98, 0.3);
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🔥 골든벨의 주인공은? 🔥</h1>
+    <h1>🔥 오늘의 밥값 내기 🔥</h1>
   </header>
 
   <!-- 상단 네비게이션 탭 -->
@@ -279,6 +360,17 @@
     <div class="final-banner" id="matchResult"></div>
   </div>
 
+  <!-- 결과 알림 팝업 모달 -->
+  <div id="resultModal" class="modal-overlay" onclick="closeModalOnBg(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div class="modal-emoji" id="modalEmoji">🤪</div>
+      <div class="modal-title" id="modalTitle">찬우 당첨!!!</div>
+      <div class="modal-desc" id="modalDesc">오늘 곱창 맛있게 잘 먹겠습니다 꺼-억 💸</div>
+      <button class="modal-btn" onclick="closeModal()">인정하고 닫기</button>
+    </div>
+  </div>
+
   <script>
     /* ================= 탭 전환 ================= */
     function switchTab(tab) {
@@ -294,14 +386,20 @@
       }
     }
 
-    /* ================= 1. 룰렛 로직 ================= */
+    /* ================= 1. 룰렛 로직 (8칸) ================= */
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
     const spinBtn = document.getElementById("spinBtn");
     const rouletteResult = document.getElementById("rouletteResult");
 
+    // 8칸 이름 및 색상 배열
     const sectors = ["찬우", "혜진", "찬우", "혜진", "찬우", "혜진", "찬우", "혜진"];
-    const colors = ["#6495ED", "#F08080", "#6495ED", "#F08080", "#6495ED", "#F08080", "#6495ED", "#F08080"];
+    const colors = [
+      "#e63946", "#3a86ff", 
+      "#e63946", "#3a86ff", 
+      "#e63946", "#3a86ff", 
+      "#e63946", "#3a86ff"
+    ];
     const totalSectors = sectors.length;
     const arc = (2 * Math.PI) / totalSectors;
     let currentRotation = 0;
@@ -320,7 +418,7 @@
 
         ctx.save();
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 46px -apple-system, sans-serif";
+        ctx.font = "bold 32px -apple-system, sans-serif"; // 8칸에 맞춘 폰트 크기
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -351,13 +449,41 @@
         const loser = sectors[winningIndex];
 
         rouletteResult.innerText = `🎉 당첨: [${loser}] 계산 당첨!`;
+        openModal(loser); // 팝업창 띄우기
         spinBtn.disabled = false;
       }, 4000);
     }
     drawWheel();
 
+    /* ================= 팝업 모달 제어 ================= */
+    function openModal(loser) {
+      const modal = document.getElementById("resultModal");
+      const title = document.getElementById("modalTitle");
+      const desc = document.getElementById("modalDesc");
+      const emoji = document.getElementById("modalEmoji");
+
+      const emojis = ["🤪", "💸", "🤑", "🎉", "🔥", "🍖"];
+      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+      emoji.innerText = randomEmoji;
+      title.innerText = `🚨 ${loser} 당첨!!! 🚨`;
+      desc.innerHTML = `오늘 곱창 맛있게 잘 먹겠습니다!<br><b>${loser}</b>님의 지갑이 열렸습니다 💸 꺼-억!`;
+
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("resultModal").classList.remove("active");
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target.id === "resultModal") {
+        closeModal();
+      }
+    }
+
     /* ================= 2. 5.00초 스톱워치 로직 ================= */
-    let currentStep = 0; // 0: 찬우 시작전, 1: 찬우 측정중, 2: 혜진 시작전, 3: 혜진 측정중, 4: 게임 종료
+    let currentStep = 0;
     let startTime = 0;
     let timerInterval = null;
     let scoreChanwoo = null;
@@ -371,12 +497,12 @@
     const resetMatchBtn = document.getElementById("resetMatchBtn");
 
     function handleTimerClick() {
-      if (currentStep === 0) { // 찬우 시작
+      if (currentStep === 0) {
         startTimer();
         timerBtn.innerText = "스톱!";
         timerBtn.style.background = "#ff4444";
         currentStep = 1;
-      } else if (currentStep === 1) { // 찬우 정지
+      } else if (currentStep === 1) {
         scoreChanwoo = stopTimer();
         document.getElementById("score1").innerText = scoreChanwoo.toFixed(2) + "초";
         const diff1 = (scoreChanwoo - 5.00).toFixed(2);
@@ -388,12 +514,12 @@
         timerBtn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
         timerHint.innerText = "준비되셨으면 시작을 눌러주세요!";
         currentStep = 2;
-      } else if (currentStep === 2) { // 혜진 시작
+      } else if (currentStep === 2) {
         startTimer();
         timerBtn.innerText = "스톱!";
         timerBtn.style.background = "#ff4444";
         currentStep = 3;
-      } else if (currentStep === 3) { // 혜진 정지 및 결과 판정
+      } else if (currentStep === 3) {
         scoreHyejin = stopTimer();
         document.getElementById("score2").innerText = scoreHyejin.toFixed(2) + "초";
         const diff2 = (scoreHyejin - 5.00).toFixed(2);
