@@ -462,12 +462,12 @@
       const desc = document.getElementById("modalDesc");
       const emoji = document.getElementById("modalEmoji");
 
-      const emojis = ["🤪", "💸", "🤑", "🎉", "🔥", "🍖"];
+      const emojis = ["🤪"];
       const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
       emoji.innerText = randomEmoji;
       title.innerText = `🚨 ${loser} 당첨!!! 🚨`;
-      desc.innerHTML = `맛있게 잘 먹었습니다!<br><b>${loser}</b>님의 지갑이 열렸습니다 💸 꺼-억!`;
+      desc.innerHTML = `<b>${loser}</b>님의 지갑이 열렸습니다 💸 꺼-억!`;
 
       modal.classList.add("active");
     }
