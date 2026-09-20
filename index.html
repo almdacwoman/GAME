@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>계산 내기 게임</title>
+  <title>계산 내기 게임 천국</title>
 
   <!-- PWA & 모바일 전체화면 설정 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,6 +20,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      touch-action: manipulation;
     }
     body {
       background-color: #121214;
@@ -28,55 +29,65 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px);
+      padding: env(safe-area-inset-top, 16px) 14px env(safe-area-inset-bottom, 20px);
       overscroll-behavior: none;
     }
     header {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       text-align: center;
-      margin-top: 12px;
-      margin-bottom: 16px;
+      margin-top: 8px;
+      margin-bottom: 14px;
     }
     header h1 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
     
-    /* 탭 메뉴 */
+    /* 가로 스크롤 탭 바 */
+    .tab-container {
+      width: 100%;
+      max-width: 440px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 18px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tab-container::-webkit-scrollbar { display: none; }
     .tab-bar {
-      display: flex;
-      background: #202026;
+      display: inline-flex;
+      background: #1e1e24;
       border-radius: 14px;
       padding: 4px;
-      width: 100%;
-      max-width: 420px;
-      margin-bottom: 24px;
+      gap: 4px;
+      min-width: 100%;
     }
     .tab-btn {
-      flex: 1;
-      padding: 10px 0;
+      flex: 0 0 auto;
+      padding: 9px 14px;
       border: none;
       background: transparent;
-      color: #8a8a93;
-      font-size: 0.95rem;
+      color: #8e8e98;
+      font-size: 0.88rem;
       font-weight: 700;
       border-radius: 10px;
       cursor: pointer;
+      white-space: nowrap;
       transition: all 0.2s ease;
     }
     .tab-btn.active {
-      background: #32323a;
+      background: #2e2e38;
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
 
-    /* 게임 컨테이너 */
+    /* 게임 뷰 공통 */
     .game-view {
       display: none;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       flex-direction: column;
       align-items: center;
       animation: fadeIn 0.25s ease;
@@ -89,28 +100,69 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 공통 버튼 */
+    /* 공통 카드 & 버튼 */
+    .game-card {
+      background: #1a1a20;
+      border-radius: 20px;
+      width: 100%;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .badge {
+      background: #272732;
+      color: #ff9966;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .turn-label {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
     .btn-action {
       background: linear-gradient(135deg, #ff5e62, #ff9966);
       color: #fff;
       border: none;
-      padding: 15px 44px;
-      font-size: 1.15rem;
+      padding: 13px 36px;
+      font-size: 1.1rem;
       font-weight: 800;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 4px 18px rgba(255, 94, 98, 0.4);
-      transition: transform 0.1s, opacity 0.2s;
+      box-shadow: 0 4px 16px rgba(255, 94, 98, 0.4);
+      transition: transform 0.08s ease;
     }
-    .btn-action:active { transform: scale(0.96); }
+    .btn-action:active { transform: scale(0.95); }
     .btn-action:disabled { opacity: 0.45; cursor: not-allowed; }
+    .scoreboard {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .score-item {
+      flex: 1;
+      background: #23232c;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .score-name { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 2px; }
+    .score-val { font-size: 1.1rem; font-weight: 800; color: #fff; }
 
-    /* [탭 1] 룰렛 스타일 */
+    /* [탭 1] 룰렛 */
     .roulette-box {
       position: relative;
-      width: 290px;
-      height: 290px;
-      margin-bottom: 28px;
+      width: 280px;
+      height: 280px;
+      margin-bottom: 24px;
     }
     .pointer {
       position: absolute;
@@ -125,7 +177,7 @@
       z-index: 10;
       filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
     }
-    canvas {
+    #wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
@@ -133,124 +185,240 @@
       transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
     }
     .roulette-result {
-      margin-top: 20px;
-      font-size: 1.1rem;
+      margin-top: 16px;
+      font-size: 1.05rem;
       font-weight: 700;
-      min-height: 28px;
+      min-height: 26px;
       color: #ffd166;
-      text-align: center;
     }
 
-    /* [탭 2] 5.00초 스톱워치 스타일 */
-    .stopwatch-card {
-      background: #1c1c21;
-      border-radius: 20px;
+    /* [탭 2] 5초 블라인드 스톱워치 */
+    .timer-display {
+      font-size: 3.3rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      color: #00ffcc;
+      margin-bottom: 6px;
+      min-height: 64px;
+    }
+    .hint-text {
+      font-size: 0.8rem;
+      color: #71717a;
+      min-height: 18px;
+      margin-bottom: 16px;
+    }
+
+    /* [탭 3] 풍선 터트리기 */
+    .balloon-stage {
       width: 100%;
-      padding: 24px 20px;
+      height: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .balloon-wrapper {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      margin-bottom: 20px;
+      cursor: pointer;
+      animation: floatMotion 3s ease-in-out infinite;
+      transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .target-badge {
-      background: #2a2a35;
-      color: #ff9966;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 14px;
+    @keyframes floatMotion {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(2deg); }
     }
-    .turn-label {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 12px;
+    .balloon-body {
+      width: 110px;
+      height: 135px;
+      background: radial-gradient(circle at 35% 30%, #ffedf2 0%, #ffb6c1 45%, #ff8da1 100%);
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      box-shadow: inset -6px -8px 15px rgba(219, 39, 119, 0.35), 0 10px 25px rgba(255, 105, 180, 0.3);
+      position: relative;
     }
-    .timer-display {
-      font-size: 3.5rem;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -1px;
-      color: #00ffcc;
-      margin-bottom: 8px;
-      min-height: 70px;
+    .balloon-body::after {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 22px;
+      width: 18px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: 50%;
+      transform: rotate(-30deg);
     }
-    .blind-hint {
-      font-size: 0.82rem;
-      color: #71717a;
-      min-height: 20px;
-      margin-bottom: 20px;
+    .balloon-knot {
+      width: 14px;
+      height: 10px;
+      background: #ff758f;
+      clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+      margin-top: -3px;
     }
-    .scoreboard {
-      width: 100%;
-      display: flex;
-      gap: 12px;
-      margin-top: 10px;
+    .balloon-string {
+      width: 2px;
+      height: 55px;
+      background: rgba(255, 255, 255, 0.4);
     }
-    .score-item {
-      flex: 1;
-      background: #27272f;
-      padding: 12px;
-      border-radius: 12px;
-      text-align: center;
+    .pop-particle {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: explode 0.5s ease-out forwards;
     }
-    .score-name {
-      font-size: 0.9rem;
-      color: #a1a1aa;
-      margin-bottom: 4px;
-    }
-    .score-val {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #fff;
-    }
-    .score-diff {
-      font-size: 0.78rem;
-      margin-top: 2px;
-      font-weight: 600;
-    }
-    .final-banner {
-      margin-top: 18px;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #ffd166;
-      text-align: center;
-      min-height: 28px;
-    }
-    .btn-secondary {
-      background: #2f2f38;
-      color: #d1d5db;
-      box-shadow: none;
-      padding: 12px 30px;
-      font-size: 1rem;
-      margin-top: 14px;
+    @keyframes explode {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
     }
 
-    /* 팝업 모달 스타일 */
+    /* [탭 4] 두더지 잡기 */
+    .whack-field {
+      width: 100%;
+      background: #3a2b20;
+      border: 3px solid #5a4232;
+      border-radius: 18px;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      background-image: radial-gradient(#4d392b 15%, transparent 16%);
+      background-size: 16px 16px;
+    }
+    .whack-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .hole-box {
+      width: 80px;
+      height: 64px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 50% 50% 45% 45%;
+      background: #1c140e;
+      box-shadow: inset 0 8px 12px rgba(0,0,0,0.85);
+      border-bottom: 3px solid #4ade80; /* 짧은 잔디 표현 */
+    }
+    .mole {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 58px;
+      height: 56px;
+      border-radius: 28px 28px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: top 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .mole.up { top: 6px; }
+    .mole.brown {
+      background: #8b5a2b;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.25);
+    }
+    .mole.white {
+      background: #ffffff;
+      box-shadow: 0 0 16px #ffffff, inset 0 0 8px #93c5fd;
+      border: 2px solid #60a5fa;
+    }
+    .hit-spark {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffd166;
+      font-weight: 900;
+      font-size: 1rem;
+      pointer-events: none;
+      animation: floatUp 0.4s ease forwards;
+    }
+    @keyframes floatUp {
+      from { opacity: 1; transform: translate(-50%, 0); }
+      to { opacity: 0; transform: translate(-50%, -24px); }
+    }
+
+    /* [탭 5] 카드 뒤집기 (6x6) */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      width: 100%;
+      margin: 8px 0;
+    }
+    .memory-card {
+      aspect-ratio: 1;
+      perspective: 600px;
+      cursor: pointer;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 8px;
+    }
+    .memory-card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .memory-card.matched {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .card-front {
+      background: #2d2d38;
+      transform: rotateY(180deg);
+      font-size: 1.25rem;
+      border: 1px solid #4a4a58;
+    }
+    .card-back {
+      background: linear-gradient(135deg, #374151, #1f2937);
+      border: 1px solid #4b5563;
+      color: #9ca3af;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .card-back::after { content: '★'; opacity: 0.4; }
+
+    /* 통합 결과 팝업 모달 */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 2000;
     }
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
     .modal-box {
       background: #1f1f26;
       border-radius: 24px;
       padding: 30px 24px 24px;
-      width: 85%;
+      width: 86%;
       max-width: 320px;
       text-align: center;
       position: relative;
@@ -272,11 +440,10 @@
       font-size: 1.6rem;
       cursor: pointer;
       line-height: 1;
-      padding: 4px;
     }
     .modal-emoji {
       font-size: 3.2rem;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       animation: wiggle 0.6s ease infinite alternate;
     }
     @keyframes wiggle {
@@ -288,13 +455,12 @@
       font-weight: 900;
       color: #ffd166;
       margin-bottom: 8px;
-      letter-spacing: -0.5px;
     }
     .modal-desc {
       font-size: 0.95rem;
       color: #e4e4e7;
       line-height: 1.5;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
     .modal-btn {
       background: linear-gradient(135deg, #ff5e62, #ff9966);
@@ -306,23 +472,27 @@
       border-radius: 14px;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 14px rgba(255, 94, 98, 0.3);
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🔥 오늘의 밥값 내기 🔥</h1>
+    <h1>🔥 계산 내기 게임 천국 🔥</h1>
   </header>
 
   <!-- 상단 네비게이션 탭 -->
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('roulette')">🎯 룰렛 돌리기</button>
-    <button class="tab-btn" onclick="switchTab('stopwatch')">⏱️ 5.00초 블라인드</button>
+  <div class="tab-container">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('roulette')">🎯 룰렛</button>
+      <button class="tab-btn" onclick="switchTab('stopwatch')">⏱️ 5초 블라인드</button>
+      <button class="tab-btn" onclick="switchTab('balloon')">🎈 풍선 터트리기</button>
+      <button class="tab-btn" onclick="switchTab('mole')">🔨 두더지 잡기</button>
+      <button class="tab-btn" onclick="switchTab('card')">🃏 카드 뒤집기</button>
+    </div>
   </div>
 
-  <!-- [화면 1] 룰렛 탭 -->
+  <!-- [1] 룰렛 탭 -->
   <div id="view-roulette" class="game-view active">
     <div class="roulette-box">
       <div class="pointer"></div>
@@ -332,74 +502,173 @@
     <div class="roulette-result" id="rouletteResult"></div>
   </div>
 
-  <!-- [화면 2] 5.00초 블라인드 스톱워치 탭 -->
+  <!-- [2] 5.00초 스톱워치 탭 -->
   <div id="view-stopwatch" class="game-view">
-    <div class="stopwatch-card">
-      <div class="target-badge">목표 시간: 정확히 5.00초</div>
-      <div class="turn-label" id="turnIndicator">찬우 차례</div>
-      <div class="timer-display" id="timer">0.00</div>
-      <div class="blind-hint" id="timerHint">1.5초가 지나면 시간이 블라인드 처리됩니다!</div>
+    <div class="game-card">
+      <div class="badge">목표: 5.00초에 가장 가깝게 맞추기</div>
+      <div class="turn-label" id="swTurn">찬우 차례</div>
+      <div class="timer-display" id="swTimer">0.00</div>
+      <div class="hint-text" id="swHint">1.5초가 지나면 화면이 블라인드 처리됩니다!</div>
+      <button class="btn-action" id="swBtn" onclick="handleStopwatchClick()">시작</button>
+      <button class="btn-action" id="swResetBtn" onclick="resetStopwatch()" style="display:none; margin-top:10px; background:#374151;">다시하기</button>
 
-      <button class="btn-action" id="timerBtn" onclick="handleTimerClick()">시작</button>
-      <button class="btn-action btn-secondary" id="resetMatchBtn" onclick="resetMatch()" style="display: none;">처음부터 다시하기</button>
-
-      <!-- 전적 기록창 -->
       <div class="scoreboard">
         <div class="score-item">
           <div class="score-name">찬우 기록</div>
-          <div class="score-val" id="score1">-</div>
-          <div class="score-diff" id="diff1"></div>
+          <div class="score-val" id="swScore1">-</div>
         </div>
         <div class="score-item">
           <div class="score-name">혜진 기록</div>
-          <div class="score-val" id="score2">-</div>
-          <div class="score-diff" id="diff2"></div>
+          <div class="score-val" id="swScore2">-</div>
         </div>
       </div>
     </div>
-    <div class="final-banner" id="matchResult"></div>
   </div>
 
-  <!-- 결과 알림 팝업 모달 -->
+  <!-- [3] 풍선 터트리기 탭 -->
+  <div id="view-balloon" class="game-view">
+    <div class="game-card">
+      <div class="badge">목표: 빠르게 40번 연타해서 터트리기!</div>
+      <div class="turn-label" id="balloonTurn">찬우 차례</div>
+      <div class="timer-display" id="balloonTimer" style="font-size: 2.5rem;">0.00s</div>
+      <div class="hint-text" id="balloonHint">풍선을 마구 터치하세요!</div>
+
+      <div class="balloon-stage" id="balloonStage">
+        <div class="balloon-wrapper" id="balloonWrap" onclick="handleBalloonTap()">
+          <div class="balloon-body"></div>
+          <div class="balloon-knot"></div>
+          <div class="balloon-string"></div>
+        </div>
+      </div>
+
+      <button class="btn-action" id="balloonReadyBtn" onclick="readyNextBalloonTurn()" style="display:none; margin-top:10px;">다음 차례 준비</button>
+
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-name">찬우 시간</div>
+          <div class="score-val" id="balloonScore1">-</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">혜진 시간</div>
+          <div class="score-val" id="balloonScore2">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- [4] 두더지 잡기 탭 -->
+  <div id="view-mole" class="game-view">
+    <div class="game-card">
+      <div class="badge">갈색(10점) / 빛나는흰색(30점, 판당 1회!)</div>
+      <div class="turn-label" id="moleTurn">찬우 차례</div>
+      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px; font-weight:800; font-size:1.1rem;">
+        <span style="color:#00ffcc;">남은 시간: <span id="moleTimer">30</span>초</span>
+        <span style="color:#ffd166;">현재 점수: <span id="moleScore">0</span>점</span>
+      </div>
+
+      <div class="whack-field">
+        <!-- 1행: 3구멍 -->
+        <div class="whack-row">
+          <div class="hole-box"><div class="mole" id="mole-0" onclick="hitMole(0)">🐹</div></div>
+          <div class="hole-box"><div class="mole" id="mole-1" onclick="hitMole(1)">🐹</div></div>
+          <div class="hole-box"><div class="mole" id="mole-2" onclick="hitMole(2)">🐹</div></div>
+        </div>
+        <!-- 2행: 2구멍 -->
+        <div class="whack-row">
+          <div class="hole-box"><div class="mole" id="mole-3" onclick="hitMole(3)">🐹</div></div>
+          <div class="hole-box"><div class="mole" id="mole-4" onclick="hitMole(4)">🐹</div></div>
+        </div>
+        <!-- 3행: 3구멍 -->
+        <div class="whack-row">
+          <div class="hole-box"><div class="mole" id="mole-5" onclick="hitMole(5)">🐹</div></div>
+          <div class="hole-box"><div class="mole" id="mole-6" onclick="hitMole(6)">🐹</div></div>
+          <div class="hole-box"><div class="mole" id="mole-7" onclick="hitMole(7)">🐹</div></div>
+        </div>
+      </div>
+
+      <button class="btn-action" id="moleStartBtn" onclick="startMoleRound()" style="margin-top:14px;">시작하기</button>
+
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-name">찬우 점수</div>
+          <div class="score-val" id="moleScore1">-</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">혜진 점수</div>
+          <div class="score-val" id="moleScore2">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- [5] 카드 뒤집기 탭 (6x6) -->
+  <div id="view-card" class="game-view">
+    <div class="game-card">
+      <div class="badge">15초 기억 후 ➔ 15초 매칭 대결!</div>
+      <div class="turn-label" id="cardTurn">찬우 차례</div>
+      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px; font-weight:800; font-size:1.05rem;">
+        <span style="color:#00ffcc;" id="cardPhaseStatus">대기 중</span>
+        <span style="color:#ffd166;">찾은 쌍: <span id="cardPairs">0</span>개</span>
+      </div>
+
+      <div class="card-grid" id="cardGrid"></div>
+
+      <button class="btn-action" id="cardStartBtn" onclick="startCardRound()" style="margin-top:12px;">시작하기</button>
+
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-name">찬우 맞춘 쌍</div>
+          <div class="score-val" id="cardScore1">-</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">혜진 맞춘 쌍</div>
+          <div class="score-val" id="cardScore2">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통합 패자 알림 팝업 모달 -->
   <div id="resultModal" class="modal-overlay" onclick="closeModalOnBg(event)">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()">&times;</button>
-      <div class="modal-emoji" id="modalEmoji">🤪</div>
+      <div class="modal-emoji">🤪</div>
       <div class="modal-title" id="modalTitle">찬우 당첨!!!</div>
-      <div class="modal-desc" id="modalDesc">오늘 곱창 맛있게 잘 먹겠습니다 꺼-억 💸</div>
+      <div class="modal-desc" id="modalDesc">오늘 계산 맛있게 잘 먹겠습니다 꺼-억 💸</div>
       <button class="modal-btn" onclick="closeModal()">인정하고 닫기</button>
     </div>
   </div>
 
   <script>
-    /* ================= 탭 전환 ================= */
-    function switchTab(tab) {
+    /* ================= 공통: 탭 전환 및 결과 팝업 ================= */
+    function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
 
-      if (tab === 'roulette') {
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('view-roulette').classList.add('active');
-      } else {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('view-stopwatch').classList.add('active');
-      }
+      const tabMap = {
+        roulette: 0, stopwatch: 1, balloon: 2, mole: 3, card: 4
+      };
+      document.querySelectorAll('.tab-btn')[tabMap[tabId]].classList.add('active');
+      document.getElementById('view-' + tabId).classList.add('active');
     }
 
-    /* ================= 1. 룰렛 로직 (8칸) ================= */
+    function showLoserModal(loser) {
+      const modal = document.getElementById("resultModal");
+      document.getElementById("modalTitle").innerText = `🚨 ${loser} 당첨!!! 🚨`;
+      document.getElementById("modalDesc").innerHTML = `오늘 계산 맛있게 잘 먹겠습니다!<br><b>${loser}</b>님의 지갑이 시원하게 열렸습니다 💸 꺼-억!`;
+      modal.classList.add("active");
+    }
+    function closeModal() { document.getElementById("resultModal").classList.remove("active"); }
+    function closeModalOnBg(e) { if(e.target.id === "resultModal") closeModal(); }
+
+    /* ================= 1. 8칸 룰렛 ================= */
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
     const spinBtn = document.getElementById("spinBtn");
     const rouletteResult = document.getElementById("rouletteResult");
 
-    // 8칸 이름 및 색상 배열
     const sectors = ["찬우", "혜진", "찬우", "혜진", "찬우", "혜진", "찬우", "혜진"];
-    const colors = [
-      "#e63946", "#3a86ff", 
-      "#e63946", "#3a86ff", 
-      "#e63946", "#3a86ff", 
-      "#e63946", "#3a86ff"
-    ];
+    const colors = ["#e63946", "#3a86ff", "#e63946", "#3a86ff", "#e63946", "#3a86ff", "#e63946", "#3a86ff"];
     const totalSectors = sectors.length;
     const arc = (2 * Math.PI) / totalSectors;
     let currentRotation = 0;
@@ -407,7 +676,6 @@
     function drawWheel() {
       const radius = canvas.width / 2;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       for (let i = 0; i < totalSectors; i++) {
         const angle = i * arc - Math.PI / 2;
         ctx.fillStyle = colors[i];
@@ -418,169 +686,413 @@
 
         ctx.save();
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 32px -apple-system, sans-serif"; // 8칸에 맞춘 폰트 크기
+        ctx.font = "bold 32px -apple-system, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-
         const textAngle = angle + arc / 2;
-        ctx.translate(
-          radius + Math.cos(textAngle) * (radius * 0.65),
-          radius + Math.sin(textAngle) * (radius * 0.65)
-        );
+        ctx.translate(radius + Math.cos(textAngle) * (radius * 0.65), radius + Math.sin(textAngle) * (radius * 0.65));
         ctx.rotate(textAngle + Math.PI / 2);
         ctx.fillText(sectors[i], 0, 0);
         ctx.restore();
       }
     }
-
     function spinWheel() {
       spinBtn.disabled = true;
       rouletteResult.innerText = "두구두구... 과연 결과는?";
-
-      const randomExtra = Math.floor(Math.random() * 360);
-      const totalSpin = 360 * 5 + randomExtra;
+      const totalSpin = 360 * 5 + Math.floor(Math.random() * 360);
       currentRotation += totalSpin;
       canvas.style.transform = `rotate(${currentRotation}deg)`;
 
       setTimeout(() => {
         const normalizedDegree = (360 - (currentRotation % 360)) % 360;
-        const sliceDegree = 360 / totalSectors;
-        const winningIndex = Math.floor(normalizedDegree / sliceDegree);
-        const loser = sectors[winningIndex];
-
-        rouletteResult.innerText = `🎉 당첨: [${loser}] 계산 당첨!`;
-        openModal(loser); // 팝업창 띄우기
+        const winnerIdx = Math.floor(normalizedDegree / (360 / totalSectors));
+        const loser = sectors[winnerIdx];
+        rouletteResult.innerText = `🎉 당첨: [${loser}] 계산 확정!`;
+        showLoserModal(loser);
         spinBtn.disabled = false;
       }, 4000);
     }
     drawWheel();
 
-    /* ================= 팝업 모달 제어 ================= */
-    function openModal(loser) {
-      const modal = document.getElementById("resultModal");
-      const title = document.getElementById("modalTitle");
-      const desc = document.getElementById("modalDesc");
-      const emoji = document.getElementById("modalEmoji");
+    /* ================= 2. 5초 블라인드 스톱워치 ================= */
+    let swStep = 0; // 0:찬우시작, 1:찬우측정, 2:혜진시작, 3:혜진측정
+    let swStartTime = 0, swInterval = null;
+    let swScore1 = null, swScore2 = null;
 
-      const emojis = "🤪";
+    function handleStopwatchClick() {
+      const timerEl = document.getElementById("swTimer");
+      const btn = document.getElementById("swBtn");
+      const turnEl = document.getElementById("swTurn");
+      const hintEl = document.getElementById("swHint");
 
-      title.innerText = `🚨 ${loser} 당첨!!! 🚨`;
-      desc.innerHTML = `<b>${loser}</b>님의 지갑이 열렸습니다 💸 꺼-억!`;
+      if (swStep === 0) {
+        swStartTime = performance.now();
+        swInterval = setInterval(() => {
+          const el = (performance.now() - swStartTime) / 1000;
+          timerEl.innerText = el >= 1.5 ? "?.??" : el.toFixed(2);
+        }, 30);
+        btn.innerText = "스톱!";
+        btn.style.background = "#ff4444";
+        swStep = 1;
+      } else if (swStep === 1) {
+        clearInterval(swInterval);
+        swScore1 = (performance.now() - swStartTime) / 1000;
+        timerEl.innerText = swScore1.toFixed(2);
+        document.getElementById("swScore1").innerText = swScore1.toFixed(2) + "s";
+        turnEl.innerText = "혜진 차례";
+        btn.innerText = "혜진 시작";
+        btn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
+        hintEl.innerText = "준비되셨으면 시작을 눌러주세요!";
+        swStep = 2;
+      } else if (swStep === 2) {
+        swStartTime = performance.now();
+        swInterval = setInterval(() => {
+          const el = (performance.now() - swStartTime) / 1000;
+          timerEl.innerText = el >= 1.5 ? "?.??" : el.toFixed(2);
+        }, 30);
+        btn.innerText = "스톱!";
+        btn.style.background = "#ff4444";
+        swStep = 3;
+      } else if (swStep === 3) {
+        clearInterval(swInterval);
+        swScore2 = (performance.now() - swStartTime) / 1000;
+        timerEl.innerText = swScore2.toFixed(2);
+        document.getElementById("swScore2").innerText = swScore2.toFixed(2) + "s";
+        btn.style.display = "none";
+        document.getElementById("swResetBtn").style.display = "inline-block";
 
-      modal.classList.add("active");
+        const err1 = Math.abs(swScore1 - 5.00);
+        const err2 = Math.abs(swScore2 - 5.00);
+        showLoserModal(err1 < err2 ? "혜진" : "찬우");
+      }
+    }
+    function resetStopwatch() {
+      swStep = 0; swScore1 = null; swScore2 = null;
+      document.getElementById("swTimer").innerText = "0.00";
+      document.getElementById("swTurn").innerText = "찬우 차례";
+      document.getElementById("swScore1").innerText = "-";
+      document.getElementById("swScore2").innerText = "-";
+      document.getElementById("swBtn").style.display = "inline-block";
+      document.getElementById("swBtn").innerText = "시작";
+      document.getElementById("swBtn").style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
+      document.getElementById("swResetBtn").style.display = "none";
     }
 
-    function closeModal() {
-      document.getElementById("resultModal").classList.remove("active");
-    }
+    /* ================= 3. 풍선 터트리기 ================= */
+    const BALLOON_TARGET_TAPS = 40; // 터지는 연타 기준
+    let balloonStep = 0; // 0:찬우, 1:혜진
+    let balloonTaps = 0;
+    let balloonStartTime = 0;
+    let balloonInterval = null;
+    let balloonActive = false;
+    let balloonTime1 = null, balloonTime2 = null;
 
-    function closeModalOnBg(e) {
-      if (e.target.id === "resultModal") {
-        closeModal();
+    function handleBalloonTap() {
+      if (balloonStep >= 2) return;
+      
+      // 첫 탭에 타이머 시작
+      if (!balloonActive) {
+        balloonActive = true;
+        balloonStartTime = performance.now();
+        balloonInterval = setInterval(() => {
+          const el = (performance.now() - balloonStartTime) / 1000;
+          document.getElementById("balloonTimer").innerText = el.toFixed(2) + "s";
+        }, 30);
+      }
+
+      balloonTaps++;
+      const wrap = document.getElementById("balloonWrap");
+      // 1회 탭마다 약 3.5%씩 점진적 확대 + 가벼운 튕김
+      const scale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.5;
+      wrap.style.transform = `scale(${scale}) translateY(${balloonTaps % 2 === 0 ? -4 : 4}px)`;
+
+      if (balloonTaps >= BALLOON_TARGET_TAPS) {
+        triggerBalloonPop();
       }
     }
 
-    /* ================= 2. 5.00초 스톱워치 로직 ================= */
-    let currentStep = 0;
-    let startTime = 0;
-    let timerInterval = null;
-    let scoreChanwoo = null;
-    let scoreHyejin = null;
+    function triggerBalloonPop() {
+      clearInterval(balloonInterval);
+      const finalTime = (performance.now() - balloonStartTime) / 1000;
+      document.getElementById("balloonTimer").innerText = finalTime.toFixed(2) + "s";
+      createParticles();
 
-    const timerEl = document.getElementById("timer");
-    const timerBtn = document.getElementById("timerBtn");
-    const turnIndicator = document.getElementById("turnIndicator");
-    const timerHint = document.getElementById("timerHint");
-    const matchResult = document.getElementById("matchResult");
-    const resetMatchBtn = document.getElementById("resetMatchBtn");
+      const wrap = document.getElementById("balloonWrap");
+      wrap.style.display = "none";
 
-    function handleTimerClick() {
-      if (currentStep === 0) {
-        startTimer();
-        timerBtn.innerText = "스톱!";
-        timerBtn.style.background = "#ff4444";
-        currentStep = 1;
-      } else if (currentStep === 1) {
-        scoreChanwoo = stopTimer();
-        document.getElementById("score1").innerText = scoreChanwoo.toFixed(2) + "초";
-        const diff1 = (scoreChanwoo - 5.00).toFixed(2);
-        document.getElementById("diff1").innerText = `(오차 ${diff1 > 0 ? '+' : ''}${diff1}s)`;
-        document.getElementById("diff1").style.color = "#ffd166";
-
-        turnIndicator.innerText = "혜진 차례";
-        timerBtn.innerText = "혜진 시작";
-        timerBtn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
-        timerHint.innerText = "준비되셨으면 시작을 눌러주세요!";
-        currentStep = 2;
-      } else if (currentStep === 2) {
-        startTimer();
-        timerBtn.innerText = "스톱!";
-        timerBtn.style.background = "#ff4444";
-        currentStep = 3;
-      } else if (currentStep === 3) {
-        scoreHyejin = stopTimer();
-        document.getElementById("score2").innerText = scoreHyejin.toFixed(2) + "초";
-        const diff2 = (scoreHyejin - 5.00).toFixed(2);
-        document.getElementById("diff2").innerText = `(오차 ${diff2 > 0 ? '+' : ''}${diff2}s)`;
-        document.getElementById("diff2").style.color = "#ffd166";
-
-        calculateWinner();
-        timerBtn.style.display = "none";
-        resetMatchBtn.style.display = "inline-block";
-        currentStep = 4;
+      if (balloonStep === 0) {
+        balloonTime1 = finalTime;
+        document.getElementById("balloonScore1").innerText = finalTime.toFixed(2) + "s";
+        document.getElementById("balloonTurn").innerText = "혜진 차례";
+        document.getElementById("balloonHint").innerText = "버튼을 눌러 혜진 풍선을 준비하세요!";
+        document.getElementById("balloonReadyBtn").style.display = "inline-block";
+        balloonStep = 1;
+      } else if (balloonStep === 1) {
+        balloonTime2 = finalTime;
+        document.getElementById("balloonScore2").innerText = finalTime.toFixed(2) + "s";
+        document.getElementById("balloonTurn").innerText = "대결 종료!";
+        balloonStep = 2;
+        // 더 오래 걸린 사람(시간이 큰 사람)이 패배
+        showLoserModal(balloonTime1 < balloonTime2 ? "혜진" : "찬우");
       }
     }
 
-    function startTimer() {
-      startTime = performance.now();
-      timerInterval = setInterval(() => {
-        const elapsed = (performance.now() - startTime) / 1000;
-        if (elapsed >= 1.5) {
-          timerEl.innerText = "?.??";
-          timerHint.innerText = "마음속으로 5초를 세고 누르세요!";
-        } else {
-          timerEl.innerText = elapsed.toFixed(2);
+    function readyNextBalloonTurn() {
+      balloonTaps = 0;
+      balloonActive = false;
+      const wrap = document.getElementById("balloonWrap");
+      wrap.style.display = "flex";
+      wrap.style.transform = "scale(1)";
+      document.getElementById("balloonTimer").innerText = "0.00s";
+      document.getElementById("balloonHint").innerText = "풍선을 터치하는 순간 시간이 측정됩니다!";
+      document.getElementById("balloonReadyBtn").style.display = "none";
+    }
+
+    function createParticles() {
+      const stage = document.getElementById("balloonStage");
+      for (let i = 0; i < 24; i++) {
+        const p = document.createElement("div");
+        p.className = "pop-particle";
+        const size = Math.random() * 12 + 6;
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+        p.style.background = ["#ff6b8b", "#ff9a9e", "#fecfef", "#ffccd5"][Math.floor(Math.random() * 4)];
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 140 + 50;
+        p.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+        p.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+        stage.appendChild(p);
+        setTimeout(() => p.remove(), 500);
+      }
+    }
+
+    /* ================= 4. 두더지 잡기 ================= */
+    let moleStep = 0; // 0:찬우, 1:혜진
+    let moleScore = 0;
+    let moleTimeLeft = 30;
+    let moleTimerInterval = null;
+    let moleSpawnTimeout = null;
+    let whiteMoleAppeared = false;
+    let moleScore1 = null, moleScore2 = null;
+    let currentMoleIdx = null;
+
+    function startMoleRound() {
+      document.getElementById("moleStartBtn").style.display = "none";
+      moleScore = 0;
+      moleTimeLeft = 30;
+      whiteMoleAppeared = false;
+      document.getElementById("moleScore").innerText = "0";
+      document.getElementById("moleTimer").innerText = "30";
+
+      // 30초 카운트다운
+      moleTimerInterval = setInterval(() => {
+        moleTimeLeft--;
+        document.getElementById("moleTimer").innerText = moleTimeLeft;
+        if (moleTimeLeft <= 0) endMoleRound();
+      }, 1000);
+
+      spawnRandomMole();
+    }
+
+    function spawnRandomMole() {
+      if (moleTimeLeft <= 0) return;
+
+      // 이전 두더지 숨기기
+      if (currentMoleIdx !== null) {
+        const prev = document.getElementById("mole-" + currentMoleIdx);
+        prev.classList.remove("up", "brown", "white");
+      }
+
+      currentMoleIdx = Math.floor(Math.random() * 8);
+      const moleEl = document.getElementById("mole-" + currentMoleIdx);
+
+      // 흰색 두더지: 1판당 1회만 (남은 시간 20초 이하일 때 확률적 등장)
+      const isWhite = !whiteMoleAppeared && (moleTimeLeft <= 20) && (Math.random() < 0.35 || moleTimeLeft <= 5);
+      if (isWhite) whiteMoleAppeared = true;
+
+      moleEl.className = "mole up " + (isWhite ? "white" : "brown");
+      moleEl.innerText = isWhite ? "✨🤍" : "🐹";
+      moleEl.dataset.pts = isWhite ? "30" : "10";
+
+      // 빠른 템포: 550ms ~ 750ms 노출 후 들어감
+      const duration = Math.floor(Math.random() * 200) + 550;
+      moleSpawnTimeout = setTimeout(() => {
+        moleEl.classList.remove("up");
+        if (moleTimeLeft > 0) {
+          moleSpawnTimeout = setTimeout(spawnRandomMole, Math.floor(Math.random() * 200) + 200);
         }
-      }, 30);
+      }, duration);
     }
 
-    function stopTimer() {
-      clearInterval(timerInterval);
-      const finalSec = (performance.now() - startTime) / 1000;
-      timerEl.innerText = finalSec.toFixed(2);
-      return finalSec;
+    function hitMole(idx) {
+      const moleEl = document.getElementById("mole-" + idx);
+      if (!moleEl.classList.contains("up")) return;
+
+      const pts = parseInt(moleEl.dataset.pts, 10);
+      moleScore += pts;
+      document.getElementById("moleScore").innerText = moleScore;
+
+      // 타격 피드백 스파크
+      const spark = document.createElement("div");
+      spark.className = "hit-spark";
+      spark.innerText = `+${pts}`;
+      moleEl.parentElement.appendChild(spark);
+      setTimeout(() => spark.remove(), 400);
+
+      moleEl.classList.remove("up");
+      clearTimeout(moleSpawnTimeout);
+      moleSpawnTimeout = setTimeout(spawnRandomMole, 250);
     }
 
-    function calculateWinner() {
-      const err1 = Math.abs(scoreChanwoo - 5.00);
-      const err2 = Math.abs(scoreHyejin - 5.00);
+    function endMoleRound() {
+      clearInterval(moleTimerInterval);
+      clearTimeout(moleSpawnTimeout);
+      if (currentMoleIdx !== null) {
+        document.getElementById("mole-" + currentMoleIdx).classList.remove("up");
+      }
 
-      turnIndicator.innerText = "대결 종료!";
-      if (err1 < err2) {
-        matchResult.innerText = "👑 승자: 찬우! (혜진 계산 당첨 🔥)";
-      } else if (err2 < err1) {
-        matchResult.innerText = "👑 승자: 혜진! (찬우 계산 당첨 🔥)";
-      } else {
-        matchResult.innerText = "😮 완전 무승부! 다시 대결하세요!";
+      if (moleStep === 0) {
+        moleScore1 = moleScore;
+        document.getElementById("moleScore1").innerText = moleScore1 + "점";
+        document.getElementById("moleTurn").innerText = "혜진 차례";
+        document.getElementById("moleStartBtn").innerText = "혜진 시작하기";
+        document.getElementById("moleStartBtn").style.display = "inline-block";
+        moleStep = 1;
+      } else if (moleStep === 1) {
+        moleScore2 = moleScore;
+        document.getElementById("moleScore2").innerText = moleScore2 + "점";
+        document.getElementById("moleTurn").innerText = "대결 종료!";
+        moleStep = 2;
+        showLoserModal(moleScore1 > moleScore2 ? "혜진" : "찬우");
       }
     }
 
-    function resetMatch() {
-      currentStep = 0;
-      scoreChanwoo = null;
-      scoreHyejin = null;
-      timerEl.innerText = "0.00";
-      turnIndicator.innerText = "찬우 차례";
-      timerHint.innerText = "1.5초가 지나면 시간이 블라인드 처리됩니다!";
-      matchResult.innerText = "";
-      document.getElementById("score1").innerText = "-";
-      document.getElementById("diff1").innerText = "";
-      document.getElementById("score2").innerText = "-";
-      document.getElementById("diff2").innerText = "";
-      timerBtn.style.display = "inline-block";
-      timerBtn.innerText = "시작";
-      timerBtn.style.background = "linear-gradient(135deg, #ff5e62, #ff9966)";
-      resetMatchBtn.style.display = "none";
+    /* ================= 5. 카드 뒤집기 (6x6) ================= */
+    const CARD_EMOJIS = ['🩷', '🍀', '❤️‍🔥', '👻', '🐥', '⚾', '🎃', '⚽', '🧩', '☀️', '✈️', '🌏', '🗽', '🍚', '🥔', '🍬', '🍈', '🤩'];
+    let cardStep = 0; // 0:찬우, 1:혜진
+    let cardMatchedPairs = 0;
+    let cardFlippedList = [];
+    let cardLock = false;
+    let cardPhase = "idle"; // "memo", "match"
+    let cardTimerInterval = null;
+    let cardScore1 = null, cardScore2 = null;
+
+    function buildCardGrid() {
+      const grid = document.getElementById("cardGrid");
+      grid.innerHTML = "";
+      // 18종 2쌍 = 36장 셔플
+      const deck = [...CARD_EMOJIS, ...CARD_EMOJIS].sort(() => Math.random() - 0.5);
+
+      deck.forEach((emoji, idx) => {
+        const card = document.createElement("div");
+        card.className = "memory-card flipped"; // 초기 기억 시간엔 공개 상태로 시작
+        card.dataset.emoji = emoji;
+        card.dataset.idx = idx;
+        card.onclick = () => onCardClicked(card);
+
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front">${emoji}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function startCardRound() {
+      document.getElementById("cardStartBtn").style.display = "none";
+      cardMatchedPairs = 0;
+      cardFlippedList = [];
+      cardLock = true;
+      document.getElementById("cardPairs").innerText = "0";
+
+      buildCardGrid();
+
+      // [1단계: 15초 기억 타임]
+      let memoSec = 15;
+      const statusEl = document.getElementById("cardPhaseStatus");
+      statusEl.innerText = `기억 타임: ${memoSec}초`;
+
+      cardTimerInterval = setInterval(() => {
+        memoSec--;
+        statusEl.innerText = `기억 타임: ${memoSec}초`;
+        if (memoSec <= 0) {
+          clearInterval(cardTimerInterval);
+          // 전원 뒷면으로 뒤집기
+          document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
+          startCardMatchPhase();
+        }
+      }, 1000);
+    }
+
+    function startCardMatchPhase() {
+      cardPhase = "match";
+      cardLock = false;
+      let matchSec = 15;
+      const statusEl = document.getElementById("cardPhaseStatus");
+      statusEl.innerText = `매칭 대결: ${matchSec}초`;
+
+      cardTimerInterval = setInterval(() => {
+        matchSec--;
+        statusEl.innerText = `매칭 대결: ${matchSec}초`;
+        if (matchSec <= 0) endCardRound();
+      }, 1000);
+    }
+
+    function onCardClicked(card) {
+      if (cardLock || cardPhase !== "match") return;
+      if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+      card.classList.add("flipped");
+      cardFlippedList.push(card);
+
+      if (cardFlippedList.length === 2) {
+        cardLock = true;
+        const [c1, c2] = cardFlippedList;
+        if (c1.dataset.emoji === c2.dataset.emoji) {
+          // 일치: 카드 소멸 & 점수 획득
+          setTimeout(() => {
+            c1.classList.add("matched");
+            c2.classList.add("matched");
+            cardMatchedPairs++;
+            document.getElementById("cardPairs").innerText = cardMatchedPairs;
+            cardFlippedList = [];
+            cardLock = false;
+            if (cardMatchedPairs === 18) endCardRound();
+          }, 350);
+        } else {
+          // 불일치: 둘 다 다시 뒤집기
+          setTimeout(() => {
+            c1.classList.remove("flipped");
+            c2.classList.remove("flipped");
+            cardFlippedList = [];
+            cardLock = false;
+          }, 500);
+        }
+      }
+    }
+
+    function endCardRound() {
+      clearInterval(cardTimerInterval);
+      cardLock = true;
+      cardPhase = "idle";
+      document.getElementById("cardPhaseStatus").innerText = "라운드 종료";
+
+      if (cardStep === 0) {
+        cardScore1 = cardMatchedPairs;
+        document.getElementById("cardScore1").innerText = cardScore1 + "쌍";
+        document.getElementById("cardTurn").innerText = "혜진 차례";
+        document.getElementById("cardStartBtn").innerText = "혜진 시작하기";
+        document.getElementById("cardStartBtn").style.display = "inline-block";
+        cardStep = 1;
+      } else if (cardStep === 1) {
+        cardScore2 = cardMatchedPairs;
+        document.getElementById("cardScore2").innerText = cardScore2 + "쌍";
+        document.getElementById("cardTurn").innerText = "대결 종료!";
+        cardStep = 2;
+        showLoserModal(cardScore1 > cardScore2 ? "혜진" : "찬우");
+      }
     }
   </script>
 </body>
