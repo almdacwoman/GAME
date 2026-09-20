@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>계산 내기 게임 천국</title>
+  <title>🔥게임 천국🔥</title>
 
   <!-- PWA & 모바일 전체화면 설정 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -300,7 +300,7 @@
       border-radius: 50% 50% 45% 45%;
       background: #1c140e;
       box-shadow: inset 0 8px 12px rgba(0,0,0,0.85);
-      border-bottom: 3px solid #4ade80; /* 짧은 잔디 표현 */
+      border-bottom: 3px solid #4ade80;
     }
     .mole {
       position: absolute;
@@ -398,7 +398,7 @@
     }
     .card-back::after { content: '★'; opacity: 0.4; }
 
-    /* 통합 결과 팝업 모달 */
+    /* 결과 팝업 모달 스타일 */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -454,13 +454,13 @@
       font-size: 1.45rem;
       font-weight: 900;
       color: #ffd166;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
     .modal-desc {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #e4e4e7;
       line-height: 1.5;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .modal-btn {
       background: linear-gradient(135deg, #ff5e62, #ff9966);
@@ -567,18 +567,15 @@
       </div>
 
       <div class="whack-field">
-        <!-- 1행: 3구멍 -->
         <div class="whack-row">
           <div class="hole-box"><div class="mole" id="mole-0" onclick="hitMole(0)">🐹</div></div>
           <div class="hole-box"><div class="mole" id="mole-1" onclick="hitMole(1)">🐹</div></div>
           <div class="hole-box"><div class="mole" id="mole-2" onclick="hitMole(2)">🐹</div></div>
         </div>
-        <!-- 2행: 2구멍 -->
         <div class="whack-row">
           <div class="hole-box"><div class="mole" id="mole-3" onclick="hitMole(3)">🐹</div></div>
           <div class="hole-box"><div class="mole" id="mole-4" onclick="hitMole(4)">🐹</div></div>
         </div>
-        <!-- 3행: 3구멍 -->
         <div class="whack-row">
           <div class="hole-box"><div class="mole" id="mole-5" onclick="hitMole(5)">🐹</div></div>
           <div class="hole-box"><div class="mole" id="mole-6" onclick="hitMole(6)">🐹</div></div>
@@ -628,13 +625,13 @@
     </div>
   </div>
 
-  <!-- 통합 패자 알림 팝업 모달 -->
+  <!-- 결과 팝업 모달 -->
   <div id="resultModal" class="modal-overlay" onclick="closeModalOnBg(event)">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()">&times;</button>
       <div class="modal-emoji">🤪</div>
       <div class="modal-title" id="modalTitle">찬우 당첨!!!</div>
-      <div class="modal-desc" id="modalDesc">오늘 계산 맛있게 잘 먹겠습니다 꺼-억 💸</div>
+      <div class="modal-desc" id="modalDesc">찬우님의 지갑이 열렸습니다. 💸 꺼-억!</div>
       <button class="modal-btn" onclick="closeModal()">인정하고 닫기</button>
     </div>
   </div>
@@ -645,9 +642,7 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
 
-      const tabMap = {
-        roulette: 0, stopwatch: 1, balloon: 2, mole: 3, card: 4
-      };
+      const tabMap = { roulette: 0, stopwatch: 1, balloon: 2, mole: 3, card: 4 };
       document.querySelectorAll('.tab-btn')[tabMap[tabId]].classList.add('active');
       document.getElementById('view-' + tabId).classList.add('active');
     }
@@ -655,7 +650,8 @@
     function showLoserModal(loser) {
       const modal = document.getElementById("resultModal");
       document.getElementById("modalTitle").innerText = `🚨 ${loser} 당첨!!! 🚨`;
-      document.getElementById("modalDesc").innerHTML = `오늘 계산 맛있게 잘 먹겠습니다!<br><b>${loser}</b>님의 지갑이 시원하게 열렸습니다 💸 꺼-억!`;
+      // 요청하신 깔끔한 멘트로 적용
+      document.getElementById("modalDesc").innerHTML = `<b>${loser}</b>님의 지갑이 열렸습니다. 💸 꺼-억!`;
       modal.classList.add("active");
     }
     function closeModal() { document.getElementById("resultModal").classList.remove("active"); }
@@ -715,7 +711,7 @@
     drawWheel();
 
     /* ================= 2. 5초 블라인드 스톱워치 ================= */
-    let swStep = 0; // 0:찬우시작, 1:찬우측정, 2:혜진시작, 3:혜진측정
+    let swStep = 0;
     let swStartTime = 0, swInterval = null;
     let swScore1 = null, swScore2 = null;
 
@@ -779,8 +775,8 @@
     }
 
     /* ================= 3. 풍선 터트리기 ================= */
-    const BALLOON_TARGET_TAPS = 40; // 터지는 연타 기준
-    let balloonStep = 0; // 0:찬우, 1:혜진
+    const BALLOON_TARGET_TAPS = 40;
+    let balloonStep = 0;
     let balloonTaps = 0;
     let balloonStartTime = 0;
     let balloonInterval = null;
@@ -790,7 +786,6 @@
     function handleBalloonTap() {
       if (balloonStep >= 2) return;
       
-      // 첫 탭에 타이머 시작
       if (!balloonActive) {
         balloonActive = true;
         balloonStartTime = performance.now();
@@ -802,7 +797,6 @@
 
       balloonTaps++;
       const wrap = document.getElementById("balloonWrap");
-      // 1회 탭마다 약 3.5%씩 점진적 확대 + 가벼운 튕김
       const scale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.5;
       wrap.style.transform = `scale(${scale}) translateY(${balloonTaps % 2 === 0 ? -4 : 4}px)`;
 
@@ -832,7 +826,6 @@
         document.getElementById("balloonScore2").innerText = finalTime.toFixed(2) + "s";
         document.getElementById("balloonTurn").innerText = "대결 종료!";
         balloonStep = 2;
-        // 더 오래 걸린 사람(시간이 큰 사람)이 패배
         showLoserModal(balloonTime1 < balloonTime2 ? "혜진" : "찬우");
       }
     }
@@ -867,7 +860,7 @@
     }
 
     /* ================= 4. 두더지 잡기 ================= */
-    let moleStep = 0; // 0:찬우, 1:혜진
+    let moleStep = 0;
     let moleScore = 0;
     let moleTimeLeft = 30;
     let moleTimerInterval = null;
@@ -884,7 +877,6 @@
       document.getElementById("moleScore").innerText = "0";
       document.getElementById("moleTimer").innerText = "30";
 
-      // 30초 카운트다운
       moleTimerInterval = setInterval(() => {
         moleTimeLeft--;
         document.getElementById("moleTimer").innerText = moleTimeLeft;
@@ -897,7 +889,6 @@
     function spawnRandomMole() {
       if (moleTimeLeft <= 0) return;
 
-      // 이전 두더지 숨기기
       if (currentMoleIdx !== null) {
         const prev = document.getElementById("mole-" + currentMoleIdx);
         prev.classList.remove("up", "brown", "white");
@@ -906,7 +897,6 @@
       currentMoleIdx = Math.floor(Math.random() * 8);
       const moleEl = document.getElementById("mole-" + currentMoleIdx);
 
-      // 흰색 두더지: 1판당 1회만 (남은 시간 20초 이하일 때 확률적 등장)
       const isWhite = !whiteMoleAppeared && (moleTimeLeft <= 20) && (Math.random() < 0.35 || moleTimeLeft <= 5);
       if (isWhite) whiteMoleAppeared = true;
 
@@ -914,7 +904,6 @@
       moleEl.innerText = isWhite ? "✨🤍" : "🐹";
       moleEl.dataset.pts = isWhite ? "30" : "10";
 
-      // 빠른 템포: 550ms ~ 750ms 노출 후 들어감
       const duration = Math.floor(Math.random() * 200) + 550;
       moleSpawnTimeout = setTimeout(() => {
         moleEl.classList.remove("up");
@@ -932,7 +921,6 @@
       moleScore += pts;
       document.getElementById("moleScore").innerText = moleScore;
 
-      // 타격 피드백 스파크
       const spark = document.createElement("div");
       spark.className = "hit-spark";
       spark.innerText = `+${pts}`;
@@ -969,23 +957,22 @@
 
     /* ================= 5. 카드 뒤집기 (6x6) ================= */
     const CARD_EMOJIS = ['🩷', '🍀', '❤️‍🔥', '👻', '🐥', '⚾', '🎃', '⚽', '🧩', '☀️', '✈️', '🌏', '🗽', '🍚', '🥔', '🍬', '🍈', '🤩'];
-    let cardStep = 0; // 0:찬우, 1:혜진
+    let cardStep = 0;
     let cardMatchedPairs = 0;
     let cardFlippedList = [];
     let cardLock = false;
-    let cardPhase = "idle"; // "memo", "match"
+    let cardPhase = "idle";
     let cardTimerInterval = null;
     let cardScore1 = null, cardScore2 = null;
 
     function buildCardGrid() {
       const grid = document.getElementById("cardGrid");
       grid.innerHTML = "";
-      // 18종 2쌍 = 36장 셔플
       const deck = [...CARD_EMOJIS, ...CARD_EMOJIS].sort(() => Math.random() - 0.5);
 
       deck.forEach((emoji, idx) => {
         const card = document.createElement("div");
-        card.className = "memory-card flipped"; // 초기 기억 시간엔 공개 상태로 시작
+        card.className = "memory-card flipped";
         card.dataset.emoji = emoji;
         card.dataset.idx = idx;
         card.onclick = () => onCardClicked(card);
@@ -1009,7 +996,6 @@
 
       buildCardGrid();
 
-      // [1단계: 15초 기억 타임]
       let memoSec = 15;
       const statusEl = document.getElementById("cardPhaseStatus");
       statusEl.innerText = `기억 타임: ${memoSec}초`;
@@ -1019,7 +1005,6 @@
         statusEl.innerText = `기억 타임: ${memoSec}초`;
         if (memoSec <= 0) {
           clearInterval(cardTimerInterval);
-          // 전원 뒷면으로 뒤집기
           document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
           startCardMatchPhase();
         }
@@ -1051,7 +1036,6 @@
         cardLock = true;
         const [c1, c2] = cardFlippedList;
         if (c1.dataset.emoji === c2.dataset.emoji) {
-          // 일치: 카드 소멸 & 점수 획득
           setTimeout(() => {
             c1.classList.add("matched");
             c2.classList.add("matched");
@@ -1062,7 +1046,6 @@
             if (cardMatchedPairs === 18) endCardRound();
           }, 350);
         } else {
-          // 불일치: 둘 다 다시 뒤집기
           setTimeout(() => {
             c1.classList.remove("flipped");
             c2.classList.remove("flipped");
