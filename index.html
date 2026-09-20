@@ -344,13 +344,14 @@
       to { opacity: 0; transform: translate(-50%, -24px); }
     }
 
-    /* [탭 5] 카드 뒤집기 (6x6) */
+    /* [탭 5] 카드 뒤집기 (4x4 배열) */
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 5px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       width: 100%;
-      margin: 8px 0;
+      max-width: 340px;
+      margin: 10px auto;
     }
     .memory-card {
       aspect-ratio: 1;
@@ -363,7 +364,7 @@
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 8px;
+      border-radius: 10px;
     }
     .memory-card.flipped .card-inner {
       transform: rotateY(180deg);
@@ -377,7 +378,7 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -386,14 +387,14 @@
     .card-front {
       background: #2d2d38;
       transform: rotateY(180deg);
-      font-size: 1.25rem;
-      border: 1px solid #4a4a58;
+      font-size: 1.8rem;
+      border: 2px solid #4a4a58;
     }
     .card-back {
       background: linear-gradient(135deg, #374151, #1f2937);
-      border: 1px solid #4b5563;
+      border: 2px solid #4b5563;
       color: #9ca3af;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       font-weight: bold;
     }
     .card-back::after { content: '★'; opacity: 0.4; }
@@ -598,14 +599,14 @@
     </div>
   </div>
 
-  <!-- [5] 카드 뒤집기 탭 (6x6) -->
+  <!-- [5] 카드 뒤집기 탭 (4x4) -->
   <div id="view-card" class="game-view">
     <div class="game-card">
       <div class="badge">15초 기억 후 ➔ 15초 매칭 대결!</div>
       <div class="turn-label" id="cardTurn">찬우 차례</div>
       <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px; font-weight:800; font-size:1.05rem;">
         <span style="color:#00ffcc;" id="cardPhaseStatus">대기 중</span>
-        <span style="color:#ffd166;">찾은 쌍: <span id="cardPairs">0</span>개</span>
+        <span style="color:#ffd166;">찾은 쌍: <span id="cardPairs">0</span> / 8</span>
       </div>
 
       <div class="card-grid" id="cardGrid"></div>
@@ -954,24 +955,42 @@
       }
     }
 
-    /* ================= 5. 카드 뒤집기 (6x6) ================= */
-    const CARD_EMOJIS = ['🩷', '🍀', '❤️‍🔥', '👻', '🐥', '⚾', '🎃', '⚽', '🧩', '☀️', '✈️', '🌏', '🗽', '🍚', '🥔', '🍬', '🍈', '🤩'];
+    /* ================= 5. 카드 뒤집기 (4x4, 8쌍 16장) ================= */
+    const CARD_EMOJIS = ['🐣', '🍀', '💚', '😋', '👻', '🐶', '🥔', '⚾️'];
     let cardStep = 0;
     let cardMatchedPairs = 0;
     let cardFlippedList = [];
-    let cardLock = false;
+    let cardLock = true;
     let cardPhase = "idle";
     let cardTimerInterval = null;
     let cardScore1 = null, cardScore2 = null;
 
+    // 초기 뒷면 형태 카드 16장 생성
+    function initCardPlaceholders() {
+      const grid = document.getElementById("cardGrid");
+      grid.innerHTML = "";
+      for (let i = 0; i < 16; i++) {
+        const card = document.createElement("div");
+        card.className = "memory-card";
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-face card-back"></div>
+            <div class="card-face card-front"></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
     function buildCardGrid() {
       const grid = document.getElementById("cardGrid");
       grid.innerHTML = "";
+      // 8종 각 2장 = 총 16장 무작위 셔플
       const deck = [...CARD_EMOJIS, ...CARD_EMOJIS].sort(() => Math.random() - 0.5);
 
       deck.forEach((emoji, idx) => {
         const card = document.createElement("div");
-        card.className = "memory-card flipped";
+        card.className = "memory-card flipped"; // 시작 시 15초 동안 앞면 공개
         card.dataset.emoji = emoji;
         card.dataset.idx = idx;
         card.onclick = () => onCardClicked(card);
@@ -995,15 +1014,17 @@
 
       buildCardGrid();
 
+      // [1단계: 15초 동안 카드 기억하기]
       let memoSec = 15;
       const statusEl = document.getElementById("cardPhaseStatus");
-      statusEl.innerText = `기억 타임: ${memoSec}초`;
+      statusEl.innerText = `기억 시간: ${memoSec}초`;
 
       cardTimerInterval = setInterval(() => {
         memoSec--;
-        statusEl.innerText = `기억 타임: ${memoSec}초`;
+        statusEl.innerText = `기억 시간: ${memoSec}초`;
         if (memoSec <= 0) {
           clearInterval(cardTimerInterval);
+          // 15초 종료 후 모두 뒷면으로 뒤집기
           document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
           startCardMatchPhase();
         }
@@ -1015,11 +1036,12 @@
       cardLock = false;
       let matchSec = 15;
       const statusEl = document.getElementById("cardPhaseStatus");
-      statusEl.innerText = `매칭 대결: ${matchSec}초`;
+      statusEl.innerText = `매칭 시간: ${matchSec}초`;
 
+      // [2단계: 15초 동안 카드 맞추기]
       cardTimerInterval = setInterval(() => {
         matchSec--;
-        statusEl.innerText = `매칭 대결: ${matchSec}초`;
+        statusEl.innerText = `매칭 시간: ${matchSec}초`;
         if (matchSec <= 0) endCardRound();
       }, 1000);
     }
@@ -1035,6 +1057,7 @@
         cardLock = true;
         const [c1, c2] = cardFlippedList;
         if (c1.dataset.emoji === c2.dataset.emoji) {
+          // 일치: 그 쌍은 사라짐 (사라지는 모션)
           setTimeout(() => {
             c1.classList.add("matched");
             c2.classList.add("matched");
@@ -1042,9 +1065,11 @@
             document.getElementById("cardPairs").innerText = cardMatchedPairs;
             cardFlippedList = [];
             cardLock = false;
-            if (cardMatchedPairs === 18) endCardRound();
+            // 8쌍 모두 찾았을 경우 즉시 종료
+            if (cardMatchedPairs === 8) endCardRound();
           }, 350);
         } else {
+          // 불일치: 둘 다 다시 뒷면으로 뒤집힘
           setTimeout(() => {
             c1.classList.remove("flipped");
             c2.classList.remove("flipped");
@@ -1076,6 +1101,9 @@
         showLoserModal(cardScore1 > cardScore2 ? "혜진" : "찬우");
       }
     }
+
+    // 첫 실행 시 빈 4x4 카드 뒷면 배치
+    initCardPlaceholders();
   </script>
 </body>
 </html>
