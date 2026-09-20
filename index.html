@@ -8,9 +8,9 @@
   <!-- PWA & 모바일 전체화면 설정 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="내기 한판">
+  <meta name="apple-mobile-web-app-title" content="게임 천국">
   <meta name="theme-color" content="#121214">
-  <link rel="manifest" href='data:application/manifest+json,{"name":"내기 한판","short_name":"내기 한판","start_url":".","display":"standalone","background_color":"#121214","theme_color":"#121214"}'>
+  <link rel="manifest" href='data:application/manifest+json,{"name":"게임 천국","short_name":"게임 천국","start_url":".","display":"standalone","background_color":"#121214","theme_color":"#121214"}'>
 
   <style>
     * {
@@ -478,7 +478,7 @@
 <body>
 
   <header>
-    <h1>🔥 계산 내기 게임 천국 🔥</h1>
+    <h1>🔥게임 천국🔥</h1>
   </header>
 
   <!-- 상단 네비게이션 탭 -->
@@ -650,7 +650,6 @@
     function showLoserModal(loser) {
       const modal = document.getElementById("resultModal");
       document.getElementById("modalTitle").innerText = `🚨 ${loser} 당첨!!! 🚨`;
-      // 요청하신 깔끔한 멘트로 적용
       document.getElementById("modalDesc").innerHTML = `<b>${loser}</b>님의 지갑이 열렸습니다. 💸 꺼-억!`;
       modal.classList.add("active");
     }
