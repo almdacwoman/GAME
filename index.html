@@ -20,59 +20,74 @@
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
       touch-action: manipulation;
     }
+    
+    /* 모바일 위아래 스크롤 및 바운스 원천 차단 */
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      overscroll-behavior: none;
+      overscroll-behavior-y: none;
+    }
+
     body {
       background-color: #121214;
       color: #f3f4f6;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: env(safe-area-inset-top, 16px) 14px env(safe-area-inset-bottom, 20px);
-      overscroll-behavior: none;
+      padding: env(safe-area-inset-top, 12px) 14px env(safe-area-inset-bottom, 12px);
     }
+
     header {
       width: 100%;
       max-width: 440px;
       text-align: center;
-      margin-top: 8px;
-      margin-bottom: 14px;
+      margin-top: 4px;
+      margin-bottom: 10px;
     }
     header h1 {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
     
-    /* 가로 스크롤 탭 바 */
+    /* 가로 스크롤 탭 바 (좌우 스와이프만 허용) */
     .tab-container {
       width: 100%;
       max-width: 440px;
       overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 18px;
+      padding-bottom: 2px;
+      margin-bottom: 12px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
+      touch-action: pan-x;
     }
     .tab-container::-webkit-scrollbar { display: none; }
     .tab-bar {
       display: inline-flex;
       background: #1e1e24;
-      border-radius: 14px;
-      padding: 4px;
+      border-radius: 12px;
+      padding: 3px;
       gap: 4px;
       min-width: 100%;
     }
     .tab-btn {
       flex: 0 0 auto;
-      padding: 9px 14px;
+      padding: 8px 13px;
       border: none;
       background: transparent;
       color: #8e8e98;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      border-radius: 10px;
+      border-radius: 9px;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s ease;
@@ -90,22 +105,24 @@
       max-width: 440px;
       flex-direction: column;
       align-items: center;
-      animation: fadeIn 0.25s ease;
+      animation: fadeIn 0.2s ease;
+      flex: 1;
+      justify-content: center;
     }
     .game-view.active {
       display: flex;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     /* 공통 카드 & 버튼 */
     .game-card {
       background: #1a1a20;
-      border-radius: 20px;
+      border-radius: 18px;
       width: 100%;
-      padding: 20px 16px;
+      padding: 16px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -115,65 +132,67 @@
     .badge {
       background: #272732;
       color: #ff9966;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.76rem;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .turn-label {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: #ffffff;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .btn-action {
       background: linear-gradient(135deg, #ff5e62, #ff9966);
       color: #fff;
       border: none;
-      padding: 13px 36px;
-      font-size: 1.1rem;
+      padding: 12px 34px;
+      font-size: 1.05rem;
       font-weight: 800;
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 4px 16px rgba(255, 94, 98, 0.4);
       transition: transform 0.08s ease;
+      touch-action: manipulation;
     }
     .btn-action:active { transform: scale(0.95); }
     .btn-action:disabled { opacity: 0.45; cursor: not-allowed; }
+    
     .scoreboard {
       width: 100%;
       display: flex;
-      gap: 10px;
-      margin-top: 14px;
+      gap: 8px;
+      margin-top: 10px;
     }
     .score-item {
       flex: 1;
       background: #23232c;
-      padding: 10px;
-      border-radius: 12px;
+      padding: 8px;
+      border-radius: 10px;
       text-align: center;
     }
-    .score-name { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 2px; }
-    .score-val { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .score-name { font-size: 0.8rem; color: #a1a1aa; margin-bottom: 2px; }
+    .score-val { font-size: 1.05rem; font-weight: 800; color: #fff; }
 
     /* [탭 1] 룰렛 */
     .roulette-box {
       position: relative;
-      width: 280px;
-      height: 280px;
-      margin-bottom: 24px;
+      width: min(270px, 70vw);
+      height: min(270px, 70vw);
+      margin-bottom: 18px;
     }
     .pointer {
       position: absolute;
-      top: -12px;
+      top: -10px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 13px solid transparent;
-      border-right: 13px solid transparent;
-      border-top: 24px solid #ff4444;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 22px solid #ff4444;
       z-index: 10;
       filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
     }
@@ -185,38 +204,39 @@
       transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
     }
     .roulette-result {
-      margin-top: 16px;
-      font-size: 1.05rem;
+      margin-top: 12px;
+      font-size: 1rem;
       font-weight: 700;
-      min-height: 26px;
+      min-height: 24px;
       color: #ffd166;
     }
 
     /* [탭 2] 5초 블라인드 스톱워치 */
     .timer-display {
-      font-size: 3.3rem;
+      font-size: 3rem;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       color: #00ffcc;
-      margin-bottom: 6px;
-      min-height: 64px;
+      margin-bottom: 4px;
+      min-height: 56px;
     }
     .hint-text {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #71717a;
-      min-height: 18px;
-      margin-bottom: 16px;
+      min-height: 16px;
+      margin-bottom: 12px;
     }
 
-    /* [탭 3] 풍선 터트리기 (팽창 모션 최적화) */
+    /* [탭 3] 풍선 터트리기 */
     .balloon-stage {
       width: 100%;
-      height: 300px;
+      height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: visible;
+      touch-action: none;
     }
     .balloon-float-box {
       display: flex;
@@ -226,7 +246,7 @@
     }
     @keyframes floatMotion {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(2.5deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
     }
     .balloon-wrapper {
       position: relative;
@@ -235,37 +255,38 @@
       align-items: center;
       cursor: pointer;
       transform-origin: center 70%;
-      transition: transform 0.09s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.08s cubic-bezier(0.34, 1.56, 0.64, 1);
+      touch-action: none;
     }
     .balloon-body {
-      width: 105px;
-      height: 130px;
+      width: 95px;
+      height: 118px;
       background: radial-gradient(circle at 35% 30%, #fff0f3 0%, #ffb3c1 45%, #ff758f 100%);
       border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-      box-shadow: inset -6px -8px 16px rgba(225, 29, 72, 0.35), 0 10px 25px rgba(255, 117, 143, 0.35);
+      box-shadow: inset -5px -7px 14px rgba(225, 29, 72, 0.35), 0 8px 22px rgba(255, 117, 143, 0.35);
       position: relative;
     }
     .balloon-body::after {
       content: '';
       position: absolute;
-      top: 16px;
-      left: 20px;
-      width: 18px;
-      height: 32px;
+      top: 14px;
+      left: 18px;
+      width: 16px;
+      height: 28px;
       background: rgba(255, 255, 255, 0.7);
       border-radius: 50%;
       transform: rotate(-30deg);
     }
     .balloon-knot {
-      width: 14px;
-      height: 10px;
+      width: 12px;
+      height: 9px;
       background: #ff4d6d;
       clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
       margin-top: -3px;
     }
     .balloon-string {
       width: 2px;
-      height: 55px;
+      height: 48px;
       background: rgba(255, 255, 255, 0.4);
     }
     .pop-particle {
@@ -284,28 +305,29 @@
       width: 100%;
       background: #3a2b20;
       border: 3px solid #5a4232;
-      border-radius: 18px;
-      padding: 16px 8px;
+      border-radius: 16px;
+      padding: 12px 6px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       position: relative;
       background-image: radial-gradient(#4d392b 15%, transparent 16%);
       background-size: 16px 16px;
+      touch-action: none;
     }
     .whack-row {
       display: flex;
       justify-content: center;
-      gap: 14px;
+      gap: 10px;
     }
     .hole-box {
-      width: 80px;
-      height: 64px;
+      width: 72px;
+      height: 56px;
       position: relative;
       overflow: hidden;
       border-radius: 50% 50% 45% 45%;
       background: #1c140e;
-      box-shadow: inset 0 8px 12px rgba(0,0,0,0.85);
+      box-shadow: inset 0 6px 10px rgba(0,0,0,0.85);
       border-bottom: 3px solid #4ade80;
     }
     .mole {
@@ -313,25 +335,26 @@
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      width: 58px;
-      height: 56px;
-      border-radius: 28px 28px 10px 10px;
+      width: 52px;
+      height: 50px;
+      border-radius: 26px 26px 8px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       cursor: pointer;
       transition: top 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      touch-action: manipulation;
     }
-    .mole.up { top: 6px; }
+    .mole.up { top: 5px; }
     .mole.brown {
       background: #8b5a2b;
       box-shadow: inset 0 2px 4px rgba(255,255,255,0.25);
     }
     .mole.white {
       background: #ffffff;
-      box-shadow: 0 0 16px #ffffff, inset 0 0 8px #93c5fd;
+      box-shadow: 0 0 14px #ffffff, inset 0 0 8px #93c5fd;
       border: 2px solid #60a5fa;
     }
     .hit-spark {
@@ -341,23 +364,24 @@
       transform: translateX(-50%);
       color: #ffd166;
       font-weight: 900;
-      font-size: 1rem;
+      font-size: 0.95rem;
       pointer-events: none;
       animation: floatUp 0.4s ease forwards;
     }
     @keyframes floatUp {
       from { opacity: 1; transform: translate(-50%, 0); }
-      to { opacity: 0; transform: translate(-50%, -24px); }
+      to { opacity: 0; transform: translate(-50%, -20px); }
     }
 
     /* [탭 5] 카드 뒤집기 (4x4) */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 6px;
       width: 100%;
-      max-width: 340px;
-      margin: 10px auto;
+      max-width: 310px;
+      margin: 6px auto;
+      touch-action: manipulation;
     }
     .memory-card {
       aspect-ratio: 1;
@@ -370,7 +394,7 @@
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 10px;
+      border-radius: 9px;
     }
     .memory-card.flipped .card-inner {
       transform: rotateY(180deg);
@@ -384,7 +408,7 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 10px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -393,19 +417,19 @@
     .card-front {
       background: #2d2d38;
       transform: rotateY(180deg);
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       border: 2px solid #4a4a58;
     }
     .card-back {
       background: linear-gradient(135deg, #374151, #1f2937);
       border: 2px solid #4b5563;
       color: #9ca3af;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
     }
     .card-back::after { content: '★'; opacity: 0.4; }
 
-    /* 결과 팝업 모달 스타일 */
+    /* 결과 팝업 모달 */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -423,10 +447,10 @@
     .modal-overlay.active { display: flex; }
     .modal-box {
       background: #1f1f26;
-      border-radius: 24px;
-      padding: 30px 24px 24px;
-      width: 86%;
-      max-width: 320px;
+      border-radius: 22px;
+      padding: 26px 20px 20px;
+      width: 84%;
+      max-width: 310px;
       text-align: center;
       position: relative;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
@@ -439,18 +463,18 @@
     }
     .modal-close {
       position: absolute;
-      top: 14px;
-      right: 16px;
+      top: 12px;
+      right: 14px;
       background: none;
       border: none;
       color: #8e8e93;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       cursor: pointer;
       line-height: 1;
     }
     .modal-emoji {
-      font-size: 3.2rem;
-      margin-bottom: 8px;
+      font-size: 3rem;
+      margin-bottom: 6px;
       animation: wiggle 0.6s ease infinite alternate;
     }
     @keyframes wiggle {
@@ -458,25 +482,25 @@
       to { transform: rotate(8deg); }
     }
     .modal-title {
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 900;
       color: #ffd166;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .modal-desc {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #e4e4e7;
       line-height: 1.5;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .modal-btn {
       background: linear-gradient(135deg, #ff5e62, #ff9966);
       color: #fff;
       border: none;
-      padding: 12px 0;
-      font-size: 1.05rem;
+      padding: 11px 0;
+      font-size: 1rem;
       font-weight: 800;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
       width: 100%;
     }
@@ -517,7 +541,7 @@
       <div class="timer-display" id="swTimer">0.00</div>
       <div class="hint-text" id="swHint">1.5초가 지나면 화면이 블라인드 처리됩니다!</div>
       <button class="btn-action" id="swBtn" onclick="handleStopwatchClick()">시작</button>
-      <button class="btn-action" id="swResetBtn" onclick="resetStopwatch()" style="display:none; margin-top:10px; background:#374151;">다시하기</button>
+      <button class="btn-action" id="swResetBtn" onclick="resetStopwatch()" style="display:none; margin-top:8px; background:#374151;">다시하기</button>
 
       <div class="scoreboard">
         <div class="score-item">
@@ -536,7 +560,7 @@
   <div id="view-balloon" class="game-view">
     <div class="game-card">
       <div class="turn-label" id="balloonTurn">찬우 차례</div>
-      <div class="timer-display" id="balloonTimer" style="font-size: 2.5rem;">0.00s</div>
+      <div class="timer-display" id="balloonTimer" style="font-size: 2.3rem;">0.00s</div>
       <div class="hint-text" id="balloonHint">풍선을 마구 터치하세요!</div>
 
       <div class="balloon-stage" id="balloonStage">
@@ -549,7 +573,7 @@
         </div>
       </div>
 
-      <button class="btn-action" id="balloonReadyBtn" onclick="readyNextBalloonTurn()" style="display:none; margin-top:10px;">다음 차례 준비</button>
+      <button class="btn-action" id="balloonReadyBtn" onclick="readyNextBalloonTurn()" style="display:none; margin-top:8px;">다음 차례 준비</button>
 
       <div class="scoreboard">
         <div class="score-item">
@@ -569,7 +593,7 @@
     <div class="game-card">
       <div class="badge">갈색(10점) / 빛나는흰색(30점, 판당 1회!)</div>
       <div class="turn-label" id="moleTurn">찬우 차례</div>
-      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px; font-weight:800; font-size:1.1rem;">
+      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px; font-weight:800; font-size:1rem;">
         <span style="color:#00ffcc;">남은 시간: <span id="moleTimer">30</span>초</span>
         <span style="color:#ffd166;">현재 점수: <span id="moleScore">0</span>점</span>
       </div>
@@ -591,7 +615,7 @@
         </div>
       </div>
 
-      <button class="btn-action" id="moleStartBtn" onclick="startMoleRound()" style="margin-top:14px;">시작하기</button>
+      <button class="btn-action" id="moleStartBtn" onclick="startMoleRound()" style="margin-top:10px;">시작하기</button>
 
       <div class="scoreboard">
         <div class="score-item">
@@ -611,14 +635,14 @@
     <div class="game-card">
       <div class="badge">15초 기억 후 ➔ 15초 매칭 대결!</div>
       <div class="turn-label" id="cardTurn">찬우 차례</div>
-      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px; font-weight:800; font-size:1.05rem;">
+      <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:6px; font-weight:800; font-size:1rem;">
         <span style="color:#00ffcc;" id="cardPhaseStatus">대기 중</span>
         <span style="color:#ffd166;">찾은 쌍: <span id="cardPairs">0</span> / 8</span>
       </div>
 
       <div class="card-grid" id="cardGrid"></div>
 
-      <button class="btn-action" id="cardStartBtn" onclick="startCardRound()" style="margin-top:12px;">시작하기</button>
+      <button class="btn-action" id="cardStartBtn" onclick="startCardRound()" style="margin-top:8px;">시작하기</button>
 
       <div class="scoreboard">
         <div class="score-item">
@@ -645,6 +669,14 @@
   </div>
 
   <script>
+    /* ================= 모바일 스크롤 & 고무줄 바운스 원천 방지 스크립트 ================= */
+    document.addEventListener('touchmove', function(e) {
+      // 상단 탭 바 좌우 스크롤만 허용하고 나머지 화면 전체 터치 이동(스크롤) 차단
+      if (!e.target.closest('.tab-container')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
     /* ================= 공통: 탭 전환 및 결과 팝업 ================= */
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -793,7 +825,6 @@
     function handleBalloonTap() {
       if (balloonStep >= 2) return;
       
-      // 첫 터치 시 타이머 시작
       if (!balloonActive) {
         balloonActive = true;
         balloonStartTime = performance.now();
@@ -805,11 +836,8 @@
 
       balloonTaps++;
       const wrap = document.getElementById("balloonWrap");
+      const baseScale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.35;
       
-      // 터치할수록 점점 커지는 기준 스케일 (최대 약 2.4배까지 팽창)
-      const baseScale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.4;
-      
-      // 터치 순간 찰지게 부풀어 오르는 탄성 애니메이션 (Squish & Bulge)
       wrap.style.transform = `scale(${baseScale * 1.08}, ${baseScale * 0.94})`;
       setTimeout(() => {
         if (wrap.style.display !== "none") {
@@ -972,7 +1000,7 @@
       }
     }
 
-    /* ================= 5. 카드 뒤집기 (4x4, 8쌍 16장) ================= */
+    /* ================= 5. 카드 뒤집기 (4x4) ================= */
     const CARD_EMOJIS = ['🐣', '🍀', '💚', '😋', '👻', '🐶', '🥔', '⚾️'];
     let cardStep = 0;
     let cardMatchedPairs = 0;
