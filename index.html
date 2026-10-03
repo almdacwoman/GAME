@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>🔥혜지니 뽀짝🔥</title>
+  <title>🔥게임 천국🔥</title>
 
   <!-- PWA & 모바일 전체화면 설정 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -208,15 +208,25 @@
       margin-bottom: 16px;
     }
 
-    /* [탭 3] 풍선 터트리기 */
+    /* [탭 3] 풍선 터트리기 (팽창 모션 최적화) */
     .balloon-stage {
       width: 100%;
-      height: 290px;
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+    }
+    .balloon-float-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: floatMotion 3s ease-in-out infinite;
+    }
+    @keyframes floatMotion {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2.5deg); }
     }
     .balloon-wrapper {
       position: relative;
@@ -224,36 +234,32 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      animation: floatMotion 3s ease-in-out infinite;
-      transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes floatMotion {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-14px) rotate(2deg); }
+      transform-origin: center 70%;
+      transition: transform 0.09s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .balloon-body {
-      width: 110px;
-      height: 135px;
-      background: radial-gradient(circle at 35% 30%, #ffedf2 0%, #ffb6c1 45%, #ff8da1 100%);
+      width: 105px;
+      height: 130px;
+      background: radial-gradient(circle at 35% 30%, #fff0f3 0%, #ffb3c1 45%, #ff758f 100%);
       border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-      box-shadow: inset -6px -8px 15px rgba(219, 39, 119, 0.35), 0 10px 25px rgba(255, 105, 180, 0.3);
+      box-shadow: inset -6px -8px 16px rgba(225, 29, 72, 0.35), 0 10px 25px rgba(255, 117, 143, 0.35);
       position: relative;
     }
     .balloon-body::after {
       content: '';
       position: absolute;
-      top: 18px;
-      left: 22px;
+      top: 16px;
+      left: 20px;
       width: 18px;
       height: 32px;
-      background: rgba(255, 255, 255, 0.65);
+      background: rgba(255, 255, 255, 0.7);
       border-radius: 50%;
       transform: rotate(-30deg);
     }
     .balloon-knot {
       width: 14px;
       height: 10px;
-      background: #ff758f;
+      background: #ff4d6d;
       clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
       margin-top: -3px;
     }
@@ -344,7 +350,7 @@
       to { opacity: 0; transform: translate(-50%, -24px); }
     }
 
-    /* [탭 5] 카드 뒤집기 (4x4 배열) */
+    /* [탭 5] 카드 뒤집기 (4x4) */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -529,16 +535,17 @@
   <!-- [3] 풍선 터트리기 탭 -->
   <div id="view-balloon" class="game-view">
     <div class="game-card">
-      <div class="badge">목표: 빠르게 40번 연타해서 터트리기!</div>
       <div class="turn-label" id="balloonTurn">찬우 차례</div>
       <div class="timer-display" id="balloonTimer" style="font-size: 2.5rem;">0.00s</div>
       <div class="hint-text" id="balloonHint">풍선을 마구 터치하세요!</div>
 
       <div class="balloon-stage" id="balloonStage">
-        <div class="balloon-wrapper" id="balloonWrap" onclick="handleBalloonTap()">
-          <div class="balloon-body"></div>
-          <div class="balloon-knot"></div>
-          <div class="balloon-string"></div>
+        <div class="balloon-float-box">
+          <div class="balloon-wrapper" id="balloonWrap" onclick="handleBalloonTap()">
+            <div class="balloon-body"></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
         </div>
       </div>
 
@@ -786,6 +793,7 @@
     function handleBalloonTap() {
       if (balloonStep >= 2) return;
       
+      // 첫 터치 시 타이머 시작
       if (!balloonActive) {
         balloonActive = true;
         balloonStartTime = performance.now();
@@ -797,8 +805,17 @@
 
       balloonTaps++;
       const wrap = document.getElementById("balloonWrap");
-      const scale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.5;
-      wrap.style.transform = `scale(${scale}) translateY(${balloonTaps % 2 === 0 ? -4 : 4}px)`;
+      
+      // 터치할수록 점점 커지는 기준 스케일 (최대 약 2.4배까지 팽창)
+      const baseScale = 1 + (balloonTaps / BALLOON_TARGET_TAPS) * 1.4;
+      
+      // 터치 순간 찰지게 부풀어 오르는 탄성 애니메이션 (Squish & Bulge)
+      wrap.style.transform = `scale(${baseScale * 1.08}, ${baseScale * 0.94})`;
+      setTimeout(() => {
+        if (wrap.style.display !== "none") {
+          wrap.style.transform = `scale(${baseScale})`;
+        }
+      }, 50);
 
       if (balloonTaps >= BALLOON_TARGET_TAPS) {
         triggerBalloonPop();
@@ -965,7 +982,6 @@
     let cardTimerInterval = null;
     let cardScore1 = null, cardScore2 = null;
 
-    // 초기 뒷면 형태 카드 16장 생성
     function initCardPlaceholders() {
       const grid = document.getElementById("cardGrid");
       grid.innerHTML = "";
@@ -985,12 +1001,11 @@
     function buildCardGrid() {
       const grid = document.getElementById("cardGrid");
       grid.innerHTML = "";
-      // 8종 각 2장 = 총 16장 무작위 셔플
       const deck = [...CARD_EMOJIS, ...CARD_EMOJIS].sort(() => Math.random() - 0.5);
 
       deck.forEach((emoji, idx) => {
         const card = document.createElement("div");
-        card.className = "memory-card flipped"; // 시작 시 15초 동안 앞면 공개
+        card.className = "memory-card flipped";
         card.dataset.emoji = emoji;
         card.dataset.idx = idx;
         card.onclick = () => onCardClicked(card);
@@ -1014,7 +1029,6 @@
 
       buildCardGrid();
 
-      // [1단계: 15초 동안 카드 기억하기]
       let memoSec = 15;
       const statusEl = document.getElementById("cardPhaseStatus");
       statusEl.innerText = `기억 시간: ${memoSec}초`;
@@ -1024,7 +1038,6 @@
         statusEl.innerText = `기억 시간: ${memoSec}초`;
         if (memoSec <= 0) {
           clearInterval(cardTimerInterval);
-          // 15초 종료 후 모두 뒷면으로 뒤집기
           document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
           startCardMatchPhase();
         }
@@ -1038,7 +1051,6 @@
       const statusEl = document.getElementById("cardPhaseStatus");
       statusEl.innerText = `매칭 시간: ${matchSec}초`;
 
-      // [2단계: 15초 동안 카드 맞추기]
       cardTimerInterval = setInterval(() => {
         matchSec--;
         statusEl.innerText = `매칭 시간: ${matchSec}초`;
@@ -1057,7 +1069,6 @@
         cardLock = true;
         const [c1, c2] = cardFlippedList;
         if (c1.dataset.emoji === c2.dataset.emoji) {
-          // 일치: 그 쌍은 사라짐 (사라지는 모션)
           setTimeout(() => {
             c1.classList.add("matched");
             c2.classList.add("matched");
@@ -1065,11 +1076,9 @@
             document.getElementById("cardPairs").innerText = cardMatchedPairs;
             cardFlippedList = [];
             cardLock = false;
-            // 8쌍 모두 찾았을 경우 즉시 종료
             if (cardMatchedPairs === 8) endCardRound();
           }, 350);
         } else {
-          // 불일치: 둘 다 다시 뒷면으로 뒤집힘
           setTimeout(() => {
             c1.classList.remove("flipped");
             c2.classList.remove("flipped");
@@ -1102,7 +1111,6 @@
       }
     }
 
-    // 첫 실행 시 빈 4x4 카드 뒷면 배치
     initCardPlaceholders();
   </script>
 </body>
